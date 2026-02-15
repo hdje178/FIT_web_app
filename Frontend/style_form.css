@@ -1,0 +1,15 @@
+.register-form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    width: 200px;
+    max-width: 40%;
+}
+.register-form{
+    background-color: greenyellow;
+}
+#wrap{
+    flex: 1;
+}

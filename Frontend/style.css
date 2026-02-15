@@ -1,0 +1,110 @@
+h1{
+    text-align: center;
+    color: white;
+    font-size: 35px;
+}
+.text_grid1{
+    justify-self: flex-end;
+    align-content: center;
+    width: 50%;
+    height: 100%;
+    place-items: center;
+}
+.grid_vital_text img{
+    max-width: 200px;
+    max-height: 300px;
+}
+#header_h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.8;
+    transition: opacity 1s ease;
+
+}
+.vital_card_img img{
+    width: 100%;
+    height: auto;
+    display: block;
+    opacity: 0.6;
+    transition: opacity 1s ease;
+}
+
+main:hover .vital_card ,
+main:hover .btn a{
+    transform: skewX(-10deg);
+}
+main:hover .btn a{
+    margin-left: 9px;
+}
+main:hover .vital_card_img img,
+main:hover .vital_card_text,
+main:hover #header_h1{
+    opacity: 1;
+}
+.vital_card{
+    display: flex;
+    margin-top: 50px;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    border-radius: 5px;
+    border: 2px solid lightblue;
+    position: relative;
+    box-sizing: border-box;
+    box-shadow: 5px 3px 15px rgba(130, 246, 236, 0.1);
+    transition: box-shadow 1s ease, transform 1s ease;
+    margin-bottom: 10px;
+
+}
+main{
+    transition: transform 1s ease;
+    padding-bottom: 50px;
+}
+.flex_container_vital_card{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.vital_card_text{
+    font-family: "Arial Black", Geneva, Tahoma, sans-serif ;
+    font-size: 13px;
+    color: white;
+    text-align: center;
+    max-width: 100%;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    padding: 10px 14px;
+    text-shadow:0 0 1px lightskyblue;
+    background-color: rgba(16, 15, 15, 0.1) ;
+    backdrop-filter: blur(5px);
+    opacity: 0.8;
+    transition: opacity 1s ease;
+}
+.btn{
+    position: absolute;
+    bottom: 140px;
+}
+.btn a{
+    color: white;
+    background: rgba(50, 223, 243, 0.9);
+    box-shadow:  5px 3px 15px rgba(130, 246, 236, 0.1);
+    border: 2px solid #2fc8db;
+    border-radius: 10px;
+    text-shadow: 1px 1px 5px sandybrown;
+    transition: box-shadow 1s ease, background 1s ease, transform 0.5s ease, margin-right 0.5s ease, border 1s ease;
+    padding: 10px 20px;
+    font-family:"Segoe UI Semibold", sans-serif;
+    font-size:14px;
+
+}
+.btn a:hover{
+    box-shadow:  5px 3px 15px rgba(130, 246, 236, 0.3);
+    background: rgb(255, 255, 255);
+    border: 2px solid #ffffff;
+    color: black;
+
+}
