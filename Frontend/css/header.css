@@ -8,8 +8,6 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    background: #261818;
-    background: linear-gradient(180deg, rgba(38, 24, 24, 1) 45%, rgba(0, 0, 0, 1) 100%) no-repeat;
     background-size: cover;
     background-attachment: fixed;
 }
@@ -18,15 +16,15 @@ ul {
 }
 header a{
     text-decoration: none;
-    color: #ffffff;
+    color: #000000;
 }
 header a:hover{
     text-decoration: none;
-    color: #fad311;
+    color: #f50055;
 }
 header a:active{
     text-decoration: none;
-    color: whitesmoke;
+    color: #6e0000;
 }
 header {
     position: sticky;
@@ -41,10 +39,11 @@ header {
     justify-content: space-between;
     align-items: center;
     height: 100px;
-    color: white;
+    color: #000000;
     align-content: center;
-    background-color: #1b0f0a;
+    background-color: #ffffff;
     z-index: 100;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 .logo {
     display: flex;

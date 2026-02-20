@@ -122,8 +122,15 @@ input:focus, textarea:focus {
     width: 100%;
     font-size: 16px;
 }
+
 .register_table_body{
     text-align: center;
+}
+#table_sorter, #table_sorter:focus , #table_sorter:hover , #table_sorter:active{
+    border: 1px solid rgba(0, 225, 255, 0.5);
+}
+#input_for_search , #input_for_search:focus, #input_for_search:hover{
+    border: 1px solid rgba(0, 225, 255, 0.5);
 }
 .table_container{
     display: flex;
@@ -140,7 +147,7 @@ input:focus, textarea:focus {
     padding: 5px;
     transition: transform 0.2s ease;
     border-radius: 8px;
-    color: #6e6b6b;
+    color: #464545;
 }
 .edit-btn:hover{
     transform: scale(1.05);
@@ -152,18 +159,20 @@ input:focus, textarea:focus {
     padding: 5px;
     transition: transform 0.2s ease;
     border-radius: 8px;
-    color: #626060;
+    color: #414141;
 }
 .search_for_element button{
     background-color: #0ff;
     color: #000;
     border-radius: 8px;
     border: #0ff;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     padding: 5px;
+
 }
 .search_for_element button:hover{
     transform: scale(1.05);
+    box-shadow: 0 0 10px #888;
 }
 .save-btn:hover{
     transform: scale(1.05);
@@ -176,6 +185,18 @@ input:focus, textarea:focus {
     transition: transform 0.2s ease;
     border-radius: 8px;
     color: white;
+}
+#button_for_reset{
+    background-color: #f85555;
+    border: #f85555;
+    padding: 5px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 8px;
+    color: white;
+}
+#button_for_reset:hover{
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #888;
 }
 .table_filters{
     display: flex;

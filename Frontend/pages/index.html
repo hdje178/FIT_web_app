@@ -2,54 +2,100 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JunkoTeam events</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="header.css">
-    <link rel="stylesheet" href="footer.css">
+    <title>Сайт з реєстрації на події</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <script src="../scripts/script.js" defer></script>
 </head>
 <body>
 <div id="wrap">
     <header>
         <span class="logo">
-            <a href="index.html"><img alt="FIT logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzojDnlcefrIkofg5Meb73uiRP1rAjk4qz5w&s">&nbsp;& JunkoTeam</a></span>
+            <a href="index.html"><img alt="FIT logo" src="../icons/FIT_icon.png">&nbsp;& JunkoTeam</a></span>
         <nav class="navbar_header">
             <ul>
-                <li><a href="form.html">Events</a></li>
+                <li><a href="coming_soon.html">Events</a></li>
             </ul>
         </nav>
     </header>
     <br>
     <main>
         <h1 id="header_h1">Варіант №7<br>Сайт з реєстрації на події</h1>
-    <div class="flex_container_vital_card">
-        <div class="vital_card">
-            <div class="vital_card_img">
-                <img src="icons/logo_JunkoTeam.png" alt="logo_JunkoTeam">
+        <div class="container">
+            <div class="form_container">
+                <form class="register-form" id="register-form" novalidate>
+                    <div class="register-form_name_div">
+                        <label for="register-form_name">Введіть подію</label>
+                        <input id="register-form_name" type="text" placeholder="Якась назва...">
+                        <small class="error" id="name_error"></small>
+                    </div>
+                    <div class="register-form_date_div">
+                        <label for="register-form_date">Введіть дату</label>
+                        <input  id="register-form_date" type="date">
+                        <small class="error" id="date_error"></small>
+                    </div>
+                    <div class="register-form_location_div">
+                        <label for="register-form_location">Введіть місце проведення</label>
+                        <input id="register-form_location" type="text"  placeholder="Якась локація...">
+                        <small class="error" id="location_error"></small>
+                    </div>
+                    <div class="register-form_capacity_div">
+                        <label for="register-form_capacity">Введіть к-сть учасників</label>
+                        <input id="register-form_capacity" type="number" min="0" placeholder="Якась місткість...">
+                        <small class="error" id="capacity_error"></small>
+                    </div>
+                    <div class="register-form_description_div">
+                        <label for="register-form_description">Введіть опис</label>
+                        <textarea id="register-form_description" rows="8" cols="20" placeholder="Якийсь опис...(опціонально)"></textarea>
+                    </div>
+                    <div class="register-form_buttons">
+                        <div class="register-form_button_submit">
+                            <button type="submit">Підтвердити</button>
+                        </div>
+                        <div class="register-form_button_reset">
+                            <button type="button">Відмінити</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div class="btn">
-            <a href="form.html">Register for the event </a>
-            </div>
-            <div class="vital_card_text">
-            <p id="vital_card_text">Ми, команда JunkoTeam, проводимо різні події та івенти за участі різних відомих корпорацій та організацій або просто в цікавих місцях для учасників освітнього процесу за участі FITa</p>
-            </div>
-        </div>
-    </div>
+            <div class="table_container">
+                <div class="table_filters">
+                    <div class="search_for_element">
+                        <label for="input_for_search">Пошук</label>
+                        <input id="input_for_search" type="text">
+                        <button type="button" id="button_for_search">Шукати</button>
+                        <button type="button" id="button_for_reset">Відмінити</button>
+                    </div>
+                    <label for="table_sorter">Вибрати сортування:</label>
+                    <select id="table_sorter">
+                        <option value="number_sorter">За номером додання</option>
+                        <option value="date_sorter">За датою</option>
+                        <option value="name_sorter">За назвою</option>
+                        <option value="capacity_sorter">За к-стю чоловік</option>
+                    </select>
+                </div>
+                <table class="register_table">
+                    <thead class="register_table_head">
+                    <tr>
+                        <th>Номер</th>
+                        <th>Назва</th>
+                        <th>Дата</th>
+                        <th>Локація</th>
+                        <th>К-сть чоловік</th>
+                        <th>Опис</th>
+                        <th>Видалити</th>
+                        <th>Редагувати/Зберегти</th>
+                    </tr>
+                    </thead>
+                    <tbody class="register_table_body">
 
+                    </tbody>
+                </table>
+            </div>
+            </div>
     </main>
 </div>
-    <footer>
-        <div class="footer_contacts">
-            <h3>Контакти</h3>
-            <ul>
-                <li>Номер телефону менеджера: 067 34 23 906</li>
-            </ul>
-        </div>
-        <div class="footer_about_us">
-            <ul>
-                <li><a href="#">Про нас</a></li>
-            </ul>
-        </div>
-    </footer>
+
 
 </body>
 </html>
