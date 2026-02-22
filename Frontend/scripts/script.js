@@ -207,9 +207,9 @@ function validateEditTable(cells){
     return true;
 }
 
-// SORT FUNCTION FOR TABLE
+// SEARCH FUNCTION FOR TABLE
 
-function sortFunc(value, table_arr){
+function searchFunc(value, table_arr){
     let regex = new RegExp(`^${value}.*`, "i")
     const result = table_arr.filter(el => regex.test(el.name));
     if(result){
@@ -228,7 +228,7 @@ searchContainer.addEventListener("click", function(event){
     const input = document.querySelector("#input_for_search");
 
     if(target.id === "button_for_search"){
-        sortFunc(input.value, table_arr);
+        searchFunc(input.value, table_arr);
     }
 
     if(target.id === "button_for_reset"){
@@ -243,7 +243,7 @@ const select = document.querySelector("#table_sorter");
 select.addEventListener("change", (event) => {
     const target = event.target.value;
         if (target === "number_sorter"){
-            table_arr.sort((a, b) => a.id - b.id);
+            table_arr.sort((a, b) => b.id - a.id);
             saveToLocalStorage(table_arr,STORAGE_KEY);
             renderTable(table_arr);
         }else if(target === "date_sorter"){
