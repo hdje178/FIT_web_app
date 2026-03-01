@@ -69,9 +69,11 @@ function validateForm(dto){
         const date_for_check = new Date(date);
         const now = new Date()
         if (isNaN(date_for_check.getTime())) {
+            isValid = false;
             showError("register-form_date","date_error", "Неправильна дата!");
         }
         if (date_for_check < now) {
+            isValid = false;
             showError("register-form_date","date_error", "Не можна планувати на минуле!!");
         }
     }
