@@ -161,6 +161,9 @@ input:focus, textarea:focus {
     border-radius: 8px;
     color: #414141;
 }
+.error-cell{
+    background: #ee4646;
+}
 .search_for_element button{
     background-color: #0ff;
     color: #000;

@@ -139,6 +139,12 @@ function editRow(id, table_arr, buttonElement){
 
     allSaveBtns.forEach(btn => {
         if (btn !== buttonElement) {
+            const row2 = btn.closest('tr');
+            const cells2 = row2.querySelectorAll('td');
+            for (let i = 0; i < cells.length -2; i++) {
+                cells2[i].contentEditable = false;
+                cells2[i].classList.remove('edit');
+            }
             btn.textContent = 'Редагувати';
             btn.classList.remove('save-btn');
             btn.classList.add('edit-btn');
@@ -196,15 +202,24 @@ function deleteItems(index, table_arr){
 function validateEditTable(cells){
     for(let i = 0; i < cells.length - 2; i++){
         if(cells[i].textContent.trim() ===  ""){
+            cells[i].classList.add('error-cell');
             return false;
+        }else{
+            cells[i].classList.remove('error-cell');
         }
     }
-    if(Number(cells[4].textContent) <= 0 || Number(cells[4].textContent > 200) || (!isFinite(cells[4].textContent))) {
+    if(Number(cells[4].textContent) <= 0 || (Number(cells[4].textContent) > 200) || (!isFinite(cells[4].textContent))) {
+        cells[4].classList.add('error-cell');
         return false;
+    }else {
+        cells[4].classList.remove('error-cell');
     }
     let date = new Date(cells[2].textContent);
     if (isNaN(date.getTime())){
+        cells[2].classList.add('error-cell');
         return false;
+    }else{
+        cells[2].classList.remove('error-cell');
     }
     return true;
 }
@@ -285,7 +300,7 @@ tbody.addEventListener("click", function (event) {
     if (target.classList.contains("save-btn")){
         const id = Number(target.dataset.id);
         saveRow(id, table_arr, target)
-        renderTable(table_arr);
+        // renderTable(table_arr);
     }
 })
 
