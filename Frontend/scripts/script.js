@@ -194,7 +194,7 @@ function addItems(dto, table_arr){
 function deleteItems(index, table_arr){
     const index_in_arr = table_arr.findIndex((el)=> el.id === index);
     table_arr.splice(index_in_arr, 1);
-    saveToLocalStorage(STORAGE_KEY);
+    saveToLocalStorage(table_arr, STORAGE_KEY);
 }
 
 // VALIDATE EDIT TABLE FUNCTION
