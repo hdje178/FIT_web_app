@@ -35,7 +35,6 @@ export function validateForm(form){
     return errors;
 }
 
-// VALIDATE EDIT TABLE FUNCTION
 
  export function validateEditTable(values){
     let validationObj = {};

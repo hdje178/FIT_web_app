@@ -1,6 +1,5 @@
 
 
-// RENDER-TABLE FUNCTION
 function renderApp(state) {
     renderTable(state);
     renderTableErrors(state);
@@ -70,7 +69,6 @@ function renderTableErrors(state) {
             el.classList.remove("error-cell");
         }
     })
-    // save_btn.disabled = !(Object.values(state.ui.editErrors).every(v => v === true));
 }
 
 

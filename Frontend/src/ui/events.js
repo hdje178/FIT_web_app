@@ -1,6 +1,5 @@
 
 export function bindEvents(store) {
-// LISTENER FOR SEARCH AND RESET BUTTON (SEARCH)
 
     const searchContainer = document.querySelector(".search_for_element");
 
@@ -27,7 +26,6 @@ export function bindEvents(store) {
         })
     })
 
-// LISTENER SORT TABLE
 
     const select = document.querySelector("#table_sorter");
     select.addEventListener("change", (event) => {
@@ -35,7 +33,6 @@ export function bindEvents(store) {
         store.setSorter(target);
     })
 
-//LISTENER REGISTRATION FORM INPUTS
 
     const tbody = document.querySelector(".register_table_body");
     tbody.addEventListener("click", function (event) {
@@ -60,7 +57,6 @@ export function bindEvents(store) {
         }
     })
 
-//LISTENER FOR RESET AND SUBMIT BTN
 
     const btn = document.querySelector(".register-form_button_reset");
     btn.addEventListener("click", () => {
