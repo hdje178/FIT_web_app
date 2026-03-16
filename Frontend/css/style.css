@@ -161,6 +161,26 @@ input:focus, textarea:focus {
     border-radius: 8px;
     color: #414141;
 }
+.save-btn:disabled{
+    background-color: #888;
+    border: #888;
+    padding: 5px;
+    transition: transform 0.2s ease;
+}
+.save-btn:disabled:hover{
+    transform: none;
+    box-shadow: none;
+}
+#submit_button:disabled{
+    background-color: #888;
+    border: #888;
+    padding: 5px;
+    transition: transform 0.2s ease;
+}
+#submit_button:disabled:hover{
+    transform: none;
+    box-shadow: none;
+}
 .error-cell{
     background: #ee4646;
 }
