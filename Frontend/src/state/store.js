@@ -4,34 +4,44 @@ import {validateEditTable, validateForm} from "./validation.js";
 
 let listeners = [];
 let nextId = Number(localStorage.getItem("lr1_nextId") ?? "1");
-
+let currentController = null;
+let lastRequestId = 0;
 let state = structuredClone(initialState);
 
 export function createStore() {
     function addItems(item) {
         item.id = nextId++;
-        state.items.push(item);
+        state.events.push(item);
         localStorage.setItem("lr1_nextId", String(nextId));
         listeners.forEach(fn => fn(state));
     }
     const store = {
         getState: () => state,
+        setState: (newState) => {
+            state = {...state, ...newState};
+            listeners.forEach(fn => fn(state));
+        },
         loadItems: () => {
-            state.items = loadFromLocalStorage(STORAGE_KEY);
-            if (state.items.length > 0) {
-                const maxId = Math.max(...state.items.map(i => Number(i.id) || 0));
+            if (currentController) currentController.abort();
+            currentController = new AbortController();
+
+            const requestId = ++lastRequestId;
+            setState({ isLoading: true, screenError: null });
+            state.events = loadFromLocalStorage(STORAGE_KEY);
+            if (state.events.length > 0) {
+                const maxId = Math.max(...state.events.map(i => Number(i.id) || 0));
                 nextId = Math.max(nextId, maxId + 1);
                 localStorage.setItem("lr1_nextId", String(nextId));
             }
             listeners.forEach(fn => fn(state));
         },
         deleteItems: (id) => {
-            const index = state.items.findIndex(item => item.id === id);
+            const index = state.events.findIndex(item => item.id === id);
             if (index !== -1) {
-                state.items.splice(index, 1);
+                state.events.splice(index, 1);
             }
             if (state.ui.filterText) {
-                state.ui.filterItems = state.items.filter(item =>
+                state.ui.filterItems = state.events.filter(item =>
                     item.name.toLowerCase().includes(state.ui.filterText.toLowerCase())
                 );
             }
@@ -43,14 +53,14 @@ export function createStore() {
             listeners.forEach(fn => fn(state));
         },
         saveItems: (id, values) => {
-            const index = state.items.findIndex(item => item.id === id);
+            const index = state.events.findIndex(item => item.id === id);
             state.ui.editErrors = validateEditTable(values);
             const isValid = Object.values(state.ui.editErrors).every(v => v === true);
             console.log("state.ui.editErrors", state.ui.editErrors);
             console.log("isValid", isValid);
             if (index !== -1) {
-                state.items[index] = {
-                    ...state.items[index],
+                state.events[index] = {
+                    ...state.events[index],
                     ...values,
                     capacity: Number(values.capacity),
                 };
@@ -70,27 +80,26 @@ export function createStore() {
         },
         setFilterText: (text) => {
             state.ui.filterText = text;
-            state.ui.filterItems = state.items.filter(item => item.name.toLowerCase().includes(text.toLowerCase()));
+            state.ui.filterItems = state.events.filter(item => item.name.toLowerCase().includes(text.toLowerCase()));
             listeners.forEach(fn => fn(state));
         },
         setSorter: (sort) => {
             state.ui.sorter = sort;
             if(state.ui.sorter === "number_sorter"){
-                state.items.sort((a, b) => b.id - a.id);
+                state.events.sort((a, b) => b.id - a.id);
             }
             else if(state.ui.sorter === "date_sorter"){
-                state.items.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+                state.events.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
             }
             else if(state.ui.sorter === "name_sorter"){
-                state.items.sort((a,b)=> a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+                state.events.sort((a,b)=> a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
             }
             else if(state.ui.sorter === "capacity_sorter") {
-                state.items.sort((a, b) => b.capacity - a.capacity);
+                state.events.sort((a, b) => b.capacity - a.capacity);
             }
             listeners.forEach(fn => fn(state));
         },
         updateField: (name, value) => {
-            console.log("updateField", name, value);
             state.form.touched[name] = true;
             state.form.values[name] = value;
             state.form.errors = validateForm(state.form);
@@ -117,7 +126,7 @@ export function createStore() {
             };
             addItems(toAdd);
             state.form = structuredClone(initialState.form);
-            state.ui.filterItems = state.items.filter(item => item.name.toLowerCase().includes(state.ui.filterText.toLowerCase()));
+            state.ui.filterItems = state.events.filter(item => item.name.toLowerCase().includes(state.ui.filterText.toLowerCase()));
             listeners.forEach(fn => fn(state));
             },
         resetForm: () => {

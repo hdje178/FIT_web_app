@@ -18,8 +18,8 @@ export function validateForm(form){
             errors.date = "Не можна планувати на минуле!";
         }
     }
-    const locate = form.values.location.trim();
-    if (form.touched["location"] && locate ===""){
+    const location = form.values.location.trim();
+    if (form.touched["location"] && location ===""){
         errors.location = "Поле не може бути порожнім!";
     }
     const capacity = form.values.capacity;
