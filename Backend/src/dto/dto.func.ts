@@ -9,11 +9,13 @@ export function mapEventToView(event: EventItemsDto): EventResponseDto {
     date: event.date,
     location: event.location,
     capacity: event.capacity,
+    description: event.description,
   };
 }
 export function mapUserToView(user: UserDto): UserResponseDto {
     return {
     id: user.id,
+    name: user.name,
     email: user.email,
     role: user.role
     };

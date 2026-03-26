@@ -53,7 +53,31 @@ export const swaggerSpec: Record<string, any> = {
           required: true,
           content: {
             "application/json": {
-              schema: { type: "object" },
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string", example: "JS Conference" },
+                  capacity: { type: "number", example: 100 },
+                  date: {
+                    type: "string",
+                    format: "date-time",
+                    example: "2026-04-15T10:00:00.000Z",
+                  },
+                  location: { type: "string", example: "Kyiv" },
+                  description: {
+                    type: "string",
+                    example: "JavaScript community meetup",
+                  },
+                },
+                required: [
+                  "name",
+                  "capacity",
+                  "date",
+                  "location",
+                  "description",
+                ],
+                additionalProperties: false,
+              },
             },
           },
         },
@@ -77,17 +101,54 @@ export const swaggerSpec: Record<string, any> = {
       put: {
         tags: ["Events"],
         summary: "Повне оновлення події",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string", example: "JS Conf 2026" },
+                  capacity: { type: "number", example: 150 },
+                  date: { type: "string", format: "date-time", example: "2026-04-16T10:00:00.000Z" },
+                  location: { type: "string", example: "Lviv" },
+                  description: { type: "string", example: "Updated agenda" },
+                },
+                required: ["name", "capacity", "date", "location", "description"],
+                additionalProperties: false,
+              },
+            },
+          },
+        },
         responses: { 200: { description: "Оновлено" } },
       },
       patch: {
         tags: ["Events"],
         summary: "Часткове оновлення події",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  capacity: { type: "number" },
+                  date: { type: "string", format: "date-time" },
+                  location: { type: "string" },
+                  description: { type: "string" },
+                },
+                additionalProperties: false,
+              },
+            },
+          },
+        },
         responses: { 200: { description: "Оновлено" } },
       },
       delete: {
         tags: ["Events"],
         summary: "Видалити подію",
-        responses: { 200: { description: "Видалено" } },
+        responses: { 204: { description: "No Content" } },
       },
     },
     "/api/users": {
@@ -101,7 +162,23 @@ export const swaggerSpec: Record<string, any> = {
         summary: "Створити користувача",
         requestBody: {
           required: true,
-          content: { "application/json": { schema: { type: "object" } } },
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string", example: "Ivan Petrenko" },
+                  email: {
+                    type: "string",
+                    format: "email",
+                    example: "ivan.petrenko@example.com",
+                  },
+                },
+                required: ["name", "email"],
+                additionalProperties: false,
+              },
+            },
+          },
         },
         responses: { 201: { description: "Створено" } },
       },
@@ -118,17 +195,48 @@ export const swaggerSpec: Record<string, any> = {
       put: {
         tags: ["Users"],
         summary: "Повне оновлення користувача",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string", example: "Ivan P." },
+                  email: { type: "string", format: "email", example: "ivan.p@example.com" },
+                },
+                required: ["name", "email"],
+                additionalProperties: false,
+              },
+            },
+          },
+        },
         responses: { 200: { description: "Оновлено" } },
       },
       patch: {
         tags: ["Users"],
         summary: "Часткове оновлення користувача",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  email: { type: "string", format: "email" },
+                },
+                additionalProperties: false,
+              },
+            },
+          },
+        },
         responses: { 200: { description: "Оновлено" } },
       },
       delete: {
         tags: ["Users"],
         summary: "Видалити користувача",
-        responses: { 200: { description: "Видалено" } },
+        responses: { 204: { description: "No Content" } },
       },
     },
     "/api/registrations": {
@@ -142,7 +250,25 @@ export const swaggerSpec: Record<string, any> = {
         summary: "Створити реєстрацію",
         requestBody: {
           required: true,
-          content: { "application/json": { schema: { type: "object" } } },
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  userId: { type: "string", example: "<USER_ID>" },
+                  eventId: { type: "string", example: "<EVENT_ID>" },
+                  status: {
+                    type: "string",
+                    enum: ["pending", "confirmed", "canceled"],
+                    example: "pending",
+                  },
+                  description: { type: "string", example: "VIP seat" },
+                },
+                required: ["userId", "eventId"],
+                additionalProperties: false,
+              },
+            },
+          },
         },
         responses: { 201: { description: "Створено" } },
       },
@@ -156,10 +282,58 @@ export const swaggerSpec: Record<string, any> = {
         summary: "Отримати реєстрацію за ID",
         responses: { 200: { description: "Реєстрація" }, 404: { description: "Не знайдено" } },
       },
+      put: {
+        tags: ["Registrations"],
+        summary: "Повне оновлення реєстрації",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  status: {
+                    type: "string",
+                    enum: ["pending", "confirmed", "canceled"],
+                    example: "confirmed",
+                  },
+                  description: { type: "string", example: "VIP seat" },
+                },
+                required: ["status", "description"],
+                additionalProperties: false,
+              },
+            },
+          },
+        },
+        responses: { 200: { description: "Оновлено" } },
+      },
+      patch: {
+        tags: ["Registrations"],
+        summary: "Часткове оновлення реєстрації",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  status: {
+                    type: "string",
+                    enum: ["pending", "confirmed", "canceled"],
+                  },
+                  description: { type: "string" },
+                },
+                additionalProperties: false,
+              },
+            },
+          },
+        },
+        responses: { 200: { description: "Оновлено" } },
+      },
       delete: {
         tags: ["Registrations"],
         summary: "Видалити реєстрацію",
-        responses: { 200: { description: "Видалено" } },
+        responses: { 204: { description: "No Content" } },
       },
     },
   },

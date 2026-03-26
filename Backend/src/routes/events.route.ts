@@ -114,7 +114,7 @@ router.patch(
   controller.updateEventPatchController,
 );
 
-/**
+    /**
  * @openapi
  * /api/events/{id}:
  *   delete:

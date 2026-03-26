@@ -41,9 +41,10 @@
 
 - EventCreateDTO (POST /api/events):
   - name: string (обов'язково)
-  - capacity: number (обов'язково)
-  - date: string ISO (обов'язково)
-  - location: string (необов'язково)
+  - capacity: number (обов'язково, максимум 200)
+  - date: string ISO (обов'язково, майбутня дата)
+  - location: string (обов'язково)
+  - description: string (обов'язково)
 
 - EventPutDTO (PUT /api/events/{id}) — повне оновлення; вимагає всі обов'язкові поля як при створенні.
 
@@ -80,7 +81,7 @@
 | POST | /api/registrations | Створити реєстрацію | 201        |
 | DELETE | /api/registrations/{id} | Видалити реєстрацію | 204        |
 
-Примітка: Семантично для видалення коректний код — 204 No Content (без тіла). Поточні контролери повертають 200 OK; це можна змінити за потреби.
+Примітка: Семантично для видалення коректний код — 204 No Content (без тіла). Поточні контролери також повертають 204.
 
 ## 🧪 Тестування через cURL (готові приклади)
 Замість <ID> підставте реальні значення з відповідей сервера.
@@ -100,9 +101,10 @@ curl -X POST http://localhost:3000/api/events \
   -H "Content-Type: application/json" \
   -d '{
     "name": "JS Conference",
-    "capacity": 250,
+    "capacity": 100,
     "date": "2026-04-15T10:00:00.000Z",
-    "location": "Kyiv"
+    "location": "Kyiv",
+    "description": "JavaScript community meetup"
   }'
 ```
 - Повне оновлення (PUT):
@@ -111,9 +113,10 @@ curl -X PUT http://localhost:3000/api/events/<EVENT_ID> \
   -H "Content-Type: application/json" \
   -d '{
     "name": "JS Conf 2026",
-    "capacity": 300,
+    "capacity": 150,
     "date": "2026-04-16T10:00:00.000Z",
-    "location": "Lviv"
+    "location": "Lviv",
+    "description": "Updated agenda"
   }'
 ```
 - Видалення:

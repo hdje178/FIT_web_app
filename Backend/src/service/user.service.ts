@@ -1,8 +1,7 @@
 import * as repository from "../repository/user.repository.js";
 import AppError from "../errors/api.errors.js";
-import type {CreateUserDto, UserDto, UpdateUserPatchDto, UpdateUserPutDto, ParamsUserDto, UserResponseDto} from "../dto/user.dto.js";
-import {v4 as uuid4} from "uuid";
-import bcrypt from "bcrypt";
+import type { CreateUserDto, UserDto, UpdateUserPatchDto, UpdateUserPutDto } from "../dto/user.dto.js";
+import { v4 as uuid4 } from "uuid";
 
 
 
@@ -22,11 +21,10 @@ export async function addUser(payload: CreateUserDto): Promise<UserDto>{
         throw new AppError(409, "CONFLICT", "User with that email already exist", payload.email);
     }
     const id = uuid4();
-    const passwordHash = await bcrypt.hash(payload.password, 10);
     const user: UserDto = {
         id,
+        name: payload.name,
         email: payload.email,
-        passwordHash,
         role: "USER",
         createdAt: new Date(),
         updatedAt: new Date(),

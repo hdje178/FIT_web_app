@@ -1,21 +1,18 @@
-import { v4 as uuid4 } from "uuid";
-import type {UserResponseDto, UserDto, CreateUserDto, ParamsUserDto, UpdateUserPatchDto , UpdateUserPutDto} from "../dto/user.dto.js";
-import bcrypt from "bcrypt"
-import {events} from "./event.repository.js";
+import type { UserDto, UpdateUserPatchDto , UpdateUserPutDto } from "../dto/user.dto.js";
 
 export let users: UserDto[] = [
     {
         id: "1",
+        name: "Regular User",
         email: "user@gmail.com",
-        passwordHash: "hash1",
         role: "USER",
         createdAt: new Date(),
         updatedAt: new Date(),
     },
     {
         id: "2",
+        name: "Admin User",
         email: "admin@gmail.com",
-        passwordHash: "hash2",
         role: "ADMIN",
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -41,8 +38,8 @@ export async function updateUserPatch(id: string, payload: UpdateUserPatchDto): 
     }
     const updatedUser: UserDto = {
         id: oldUser.id,
+        name: payload.name ?? oldUser.name,
         email: payload.email ?? oldUser.email,
-        passwordHash: payload.password ? await bcrypt.hash(payload.password, 10) : oldUser.passwordHash,
         role: oldUser.role,
         createdAt: oldUser.createdAt,
         updatedAt: new Date(),
@@ -64,8 +61,8 @@ export async function updateUserPut(
 
     const updatedUser: UserDto = {
         id: oldUser.id,
+        name: payload.name,
         email: payload.email,
-        passwordHash: payload.password ? await bcrypt.hash(payload.password, 10) : oldUser.passwordHash,
         role: oldUser.role,
         createdAt: oldUser.createdAt,
         updatedAt: new Date(),
