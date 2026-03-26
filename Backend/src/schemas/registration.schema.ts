@@ -4,7 +4,7 @@ import { z } from "zod";
 export const createRegistrationSchema = z.object({
     userId: z.string("Не правильний формат").min(1, "User ID обов'язковий"),
     eventId: z.string("Не правильний формат").min(1, "Event ID обов'язковий"),
-    status : z.enum(["pending", "confirmed", "canceled"], "Не правильний формат" ),
+    status : z.enum(["pending", "confirmed", "canceled"], "Не правильний формат" ).optional().default("pending"),
     description: z.string("Не правильний формат").max(200, "Перевищено ліміт символів(200)").default("").optional()
 });
 export const updateRegistrationPutSchema = z.object({

@@ -22,6 +22,7 @@ export interface EventResponseDto {
   date: Date;
   location: string;
   capacity: number;
+  description: string;
 }
 export type CreateEventDto = z.infer<typeof createEventSchema>;
 export type UpdateEventPatchDto = z.infer<typeof updateEventPatchSchema>;

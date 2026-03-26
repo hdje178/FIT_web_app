@@ -30,7 +30,7 @@ export const createEventSchema = z.object({
 }).strict();
 
 export const paramsEventSchema = z.object({
-  id: z.uuid(),
+  id: z.uuid().or(z.string()), //для наглядності
 }).strict();
 export const queryEventSchema = z.object({
   limit: z.coerce
