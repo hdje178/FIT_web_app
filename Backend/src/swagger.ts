@@ -1,5 +1,4 @@
-// Manual OpenAPI (Swagger) specification
-// Повернено до ручного опису swagger, без автогенерації з JSDoc
+
 
 export const swaggerSpec: Record<string, any> = {
   openapi: "3.0.3",

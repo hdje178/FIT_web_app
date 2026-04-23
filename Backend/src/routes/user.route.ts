@@ -2,7 +2,7 @@ import express from "express";
 import * as controller from "../controllers/user.controller.js";
 import { validate } from "../middleware/validate.js";
 import {createUserSchemas, paramsUserSchemas, updateUserPutSchemas, updateUserPatchSchemas} from "../schemas/user.schemas.js"
-
+import {asyncHandler} from "../errors/async_handlerr.errors.js";
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ const router = express.Router();
  *       200:
  *         description: Список користувачів
  */
-router.get("/", validate({}), controller.getUsersController)
+router.get("/", validate({}), asyncHandler(controller.getUsersController))
 
 /**
  * @openapi
@@ -34,8 +34,8 @@ router.get("/", validate({}), controller.getUsersController)
  *       404:
  *         description: Не знайдено
  */
-router.get("/:id", validate({params: paramsUserSchemas}),controller.getUserByIdController)
-
+router.get("/:id", validate({params: paramsUserSchemas}),asyncHandler(controller.getUserByIdController))
+router.get("/:id/registrations", validate({params: paramsUserSchemas}), asyncHandler(controller.getRegistrationByUserIdController))
 /**
  * @openapi
  * /api/users:
@@ -56,7 +56,7 @@ router.get("/:id", validate({params: paramsUserSchemas}),controller.getUserByIdC
  *       201:
  *         description: Створено
  */
-router.post("/", validate({body: createUserSchemas}), controller.addUserController)
+router.post("/", validate({body: createUserSchemas}), asyncHandler(controller.addUserController))
 
 /**
  * @openapi
@@ -73,7 +73,7 @@ router.post("/", validate({body: createUserSchemas}), controller.addUserControll
  *       200:
  *         description: Оновлено
  */
-router.patch("/:id", validate({params: paramsUserSchemas, body: updateUserPatchSchemas}), controller.updateUserPatchController)
+router.patch("/:id", validate({params: paramsUserSchemas, body: updateUserPatchSchemas}), asyncHandler(controller.updateUserPatchController))
 
 /**
  * @openapi
@@ -90,7 +90,7 @@ router.patch("/:id", validate({params: paramsUserSchemas, body: updateUserPatchS
  *       200:
  *         description: Оновлено
  */
-router.put("/:id", validate({params: paramsUserSchemas, body: updateUserPutSchemas}), controller.updateUserPutController)
+router.put("/:id", validate({params: paramsUserSchemas, body: updateUserPutSchemas}),asyncHandler(controller.updateUserPutController))
 
 /**
  * @openapi
@@ -107,7 +107,7 @@ router.put("/:id", validate({params: paramsUserSchemas, body: updateUserPutSchem
  *       200:
  *         description: Видалено
  */
-router.delete("/:id", validate({params: paramsUserSchemas}), controller.deleteUserController)
+router.delete("/:id", validate({params: paramsUserSchemas}), asyncHandler(controller.deleteUserController))
 
 
 

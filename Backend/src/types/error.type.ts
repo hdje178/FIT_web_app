@@ -4,4 +4,5 @@ export type AppErrorCode =
   | "CONFLICT"
   | "INTERNAL_ERROR"
   | "SERVER_ERROR"
+  | "SERVICE_UNAVAILABLE"
   | "BAD_REQUEST";

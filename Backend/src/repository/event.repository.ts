@@ -1,121 +1,133 @@
-import { v4 as uuid4 } from "uuid";
-import type {EventItemsDto, UpdateEventPatchDto, UpdateEventPutDto} from "../dto/event.dto.js";
+import type {
+    CreateEventDto,
+    EventDbDto,
+    EventItemsDto, QueryEventDto, UnsafeEventRow,
+    UpdateEventPatchDto,
+    UpdateEventPutDto
+} from "../dto/event.dto.js";
+import {run, get, all, type RunResult} from "../db/dbClient.js";
+import {mapFromDbtoEventDto} from "../dto/dto.func.js";
+import {getEventByID} from "../service/event.service.js";
+import type {Paginated} from "../types/pagineted.type.js";
 
-export const events: EventItemsDto[] = [
-  {
-    id: "1",
-    name: "Event 1",
-    date: new Date("2027-01-01"),
-    createdAt: new Date("2027-01-01"),
-    updatedAt: new Date("2027-01-01"),
-    location: "Location 1",
-    capacity: 100,
-    description: "Description 1",
-  },
-  {
-    id: "2",
-    name: "Event 2",
-    date: new Date("2027-01-02"),
-    createdAt: new Date("2027-01-01"),
-    updatedAt: new Date("2027-01-01"),
-    location: "Location 2",
-    capacity: 200,
-    description: "Description 2",
-  },
-  {
-    id: "3",
-    name: "Event 3",
-    date: new Date("2027-01-03"),
-    createdAt: new Date("2027-01-01"),
-    updatedAt: new Date("2027-01-01"),
-    location: "Location 3",
-    capacity: 500,
-    description: "Description 3",
-  },
-  {
-    id: "4",
-    name: "Event 4",
-    date: new Date("2027-01-04"),
-    createdAt: new Date("2027-01-01"),
-    updatedAt: new Date("2027-01-01"),
-    location: "Location 4",
-    capacity: 400,
-    description: "Description 4",
-  },
-];
-export async function getEvents(): Promise<EventItemsDto[]> {
-  return events? structuredClone(events) : [];
+export async function getEvents(query: QueryEventDto): Promise<Paginated<EventItemsDto>>  {
+    let whereCondition = "1=1";
+    let orderByCondition = "ORDER BY event_id ASC";
+    const limit = Number(query.limit ?? 10);
+    const offset = Number(query.offset ?? 0);
+    const values = [];
+    if (query.search) {
+        const search = String(query.search.toLowerCase());
+        whereCondition = "name LIKE ?";
+        values.push(`%${search}%`);
+    }
+    if (query.sortBy) {
+        if (query.sortBy === "number_sorter") {
+            orderByCondition = "ORDER BY event_id ASC";
+        }
+        if (query.sortBy === "name_sorter") {
+            orderByCondition = "ORDER BY name ASC";
+        }
+        if (query.sortBy === "capacity_sorter") {
+            orderByCondition = "ORDER BY capacity ASC";
+        }
+        if (query.sortBy === "date_sorter") {
+            orderByCondition = "ORDER BY date ASC";
+        }
+    }
+    const countSql = `SELECT COUNT(*) AS cnt FROM events WHERE ${whereCondition}`;
+    const countResult = await get<any>(countSql, values);
+    orderByCondition += " LIMIT ? OFFSET ?";
+    values.push(limit, offset);
+
+    const sqlRow = `SELECT event_id, name, date, location, capacity, description, created_at, updated_at
+                    FROM events
+                    WHERE ${whereCondition}
+                    ${orderByCondition}`;
+    const events = await all<EventDbDto>(sqlRow, values);
+    const total: number = countResult.cnt;
+    return {data : events.map(mapFromDbtoEventDto), total};
 }
 export async function getEventById(
-  id: string,
-): Promise<EventItemsDto | undefined> {
-  const event = events.find((event) => event.id === id);
-  return event ? structuredClone(event) : undefined;
+  id: number,
+): Promise<EventItemsDto | null> {
+  const event = await get<EventDbDto>("SELECT event_id, name, date , location , capacity, description, created_at, updated_at FROM events WHERE event_id=?", [id]);
+  if (!event) {
+      return null;
+  }
+  return mapFromDbtoEventDto(event);
 }
-export async function addEvent(event: EventItemsDto): Promise<EventItemsDto> {
-  await events.push(event);
-  return event;
+export async function unsafeGetEventById(id: string) {
+    const sql = `SELECT event_id, name, date, location, capacity, description
+               FROM Events
+               WHERE event_id = ${id}`;
+    const event = await all<UnsafeEventRow>(sql);
+    return event
+}
+export async function getRegistrationsCount(eventId: number): Promise<number> {
+    const row = await get<{ cnt: number }>(
+        "SELECT COUNT(*) AS cnt FROM Registrations WHERE event_id = ?",
+        [Number(eventId)]
+    );
+    return row?.cnt ?? 0;
+}
+export async function addEvent(event: CreateEventDto): Promise<EventItemsDto | null> {
+  const sql = "INSERT INTO events (name, date, location, capacity, description) VALUES (?, ?, ?, ?, ?)";
+  const runEventResult = await run(sql, [event.name, event.date, event.location, event.capacity, event.description])
+  const eventDb = await getEventByID(runEventResult.lastID)
+  if (!eventDb) {
+      return null;
+  }
+  return eventDb;
 }
 export async function updateEventPatch(
-  id: string,
+  id: number,
   payload: UpdateEventPatchDto,
-): Promise<EventItemsDto | undefined> {
-  const index = events.findIndex((event) => event.id === id);
-  if (index === -1) return undefined;
-
-  const oldEvent = events[index];
-  if (!oldEvent) {
-    return undefined;
-  }
-
-  const updatedEvent: EventItemsDto = {
-    id: oldEvent.id,
-    name: payload.name ?? oldEvent.name,
-    date: payload.date ?? oldEvent.date,
-    location: payload.location ?? oldEvent.location,
-    capacity: payload.capacity ?? oldEvent.capacity,
-    description: payload.description ?? oldEvent.description,
-    createdAt: oldEvent.createdAt,
-    updatedAt: new Date(),
-  };
-
-  events.splice(index, 1, updatedEvent);
-
-  return updatedEvent;
+): Promise<RunResult> {
+    const fields = [];
+    const values = [];
+    if (payload.name !==undefined) {
+        fields.push("name = ?");
+        values.push(payload.name);
+    }
+    if (payload.date !== undefined) {
+        fields.push("date = ?");
+        values.push(payload.date);
+    }
+    if (payload.location !== undefined) {
+        fields.push("location = ?");
+        values.push(payload.location);
+    }
+    if (payload.capacity !== undefined) {
+        fields.push("capacity = ?");
+        values.push(payload.capacity);
+    }
+    if (payload.description !== undefined) {
+        fields.push("description = ?");
+        values.push(payload.description);
+    }
+    fields.push("updated_at = ?");
+    values.push(new Date().toISOString());
+    console.log("fields", fields.length)
+    values.push(id);
+    const sql = `UPDATE events
+                 SET ${fields.join(", ")}
+                 WHERE event_id = ?`;
+    return run(sql, values);
 }
-export async function updateEventPut(
-    id: string,
-    payload: UpdateEventPutDto,
-): Promise<EventItemsDto | undefined> {
-    const index = events.findIndex(event => event.id === id);
-    if (index === -1) return undefined;
 
-    const oldEvent = events[index]!;
+    export async function updateEventPut(
+        id: number,
+        payload: UpdateEventPutDto,
+    ): Promise<RunResult> {
+        return run("UPDATE events SET name=?, date=?, location=?, capacity=?, description=?, updated_at=? WHERE event_id=?",
+            [payload.name, payload.date, payload.location, payload.capacity, payload.description, new Date().toISOString(), id])
+    }
 
-    const updatedEvent: EventItemsDto = {
-        id: oldEvent.id,
-        createdAt: oldEvent.createdAt,
-        updatedAt: new Date(),
-        name: payload.name,
-        date: payload.date,
-        location: payload.location,
-        capacity: payload.capacity,
-        description: payload.description,
-    };
-
-    events[index] = updatedEvent;
-
-    return updatedEvent;
-}
-export async function deleteEvent(id: string): Promise<EventItemsDto | undefined> {
-  const index = events.findIndex((event) => event.id === id);
-  if (index === -1) {
-    return undefined;
-  }
-  const deletedEvent = events[index];
-  events.splice(index, 1);
-  return deletedEvent;
-}
-export async function ifEventExist(name: string): Promise<boolean> {
-  return events.some((event) => event.name === name);
-}
+    export async function deleteEvent(id: number): Promise<boolean | null> {
+        const runDbResult = await run("DELETE FROM events WHERE event_id=?", [Number(id)])
+        if (runDbResult.changes === 0) {
+            return null;
+        }
+        return true;
+    }

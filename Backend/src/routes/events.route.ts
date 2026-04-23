@@ -7,6 +7,9 @@ import {
     createEventSchema,
     updateEventPatchSchema, updateEventPutSchema,
 } from "../schemas/event.schemas.js";
+import {asyncHandler} from "../errors/async_handlerr.errors.js";
+import {paramsRegistrationSchema} from "../schemas/registration.schema.js";
+import {paramsUserSchemas} from "../schemas/user.schemas.js";
 const router = express.Router();
 
 /**
@@ -32,8 +35,9 @@ const router = express.Router();
 router.post(
   "/",
   validate({ body: createEventSchema }),
-  controller.addEventController,
+  asyncHandler(controller.addEventController),
 );
+router.get("/unsafe/:id", validate({params: paramsEventSchema}), asyncHandler(controller.unsafeSearchEventsController));
 
 /**
  * @openapi
@@ -55,7 +59,7 @@ router.post(
 router.get(
   "/:id",
   validate({ params: paramsEventSchema }),
-  controller.getEventByIDController,
+  asyncHandler(controller.getEventByIDController),
 );
 
 /**
@@ -70,8 +74,9 @@ router.get(
 router.get(
   "/",
   validate({ query: queryEventSchema }),
-  controller.getEventsController,
+  asyncHandler(controller.getEventsController),
 );
+router.get("/:id/registrations/count", validate({params: paramsRegistrationSchema}), asyncHandler(controller.getEventRegistrationsCountController));
 
 /**
  * @openapi
@@ -90,7 +95,7 @@ router.get(
  */
 router.put(
     "/:id", validate({ params: paramsEventSchema, body: updateEventPutSchema }),
-    controller.updateEventPutController,
+    asyncHandler(controller.updateEventPutController),
 )
 
 /**
@@ -111,7 +116,7 @@ router.put(
 router.patch(
   "/:id",
   validate({ params: paramsEventSchema, body: updateEventPatchSchema }),
-  controller.updateEventPatchController,
+  asyncHandler(controller.updateEventPatchController),
 );
 
     /**
@@ -132,7 +137,7 @@ router.patch(
 router.delete(
   "/:id",
   validate({ params: paramsEventSchema }),
-  controller.deleteEventController,
+  asyncHandler(controller.deleteEventController),
 );
 
 export default router;

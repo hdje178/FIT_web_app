@@ -37,4 +37,7 @@ export default class AppError extends Error {
   static validation(message: string = "validation failed", details?: unknown) {
     return new AppError(400, "VALIDATION_ERROR", message, details);
   }
+  static serviceUnavailable(message = "Service temporarily unavailable", details?: any) {
+      return new AppError(503, "SERVICE_UNAVAILABLE", message, details);
+    }
 }

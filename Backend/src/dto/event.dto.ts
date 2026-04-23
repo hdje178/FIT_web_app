@@ -4,20 +4,38 @@ import {
     type paramsEventSchema,
     type queryEventSchema, updateEventPutSchema,
 } from "../schemas/event.schemas.js";
-import {  z } from "zod";
+import {number, string, z} from "zod";
 
 export interface EventItemsDto {
-  id: string;
+  id: number;
   name: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   date: Date;
   location: string;
   capacity: number;
   description: string;
 }
+export interface EventDbDto{
+    event_id: number;
+    name: string;
+    date: Date;
+    location: string;
+    capacity: number;
+    description: string;
+    created_at: string;
+    updated_at: string;
+}
+export type UnsafeEventRow = {
+    event_id: number;
+    name: string;
+    date: string;
+    location: string;
+    capacity: number;
+    description: string;
+};
 export interface EventResponseDto {
-  id: string;
+  id: number;
   name: string;
   date: Date;
   location: string;

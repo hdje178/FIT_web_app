@@ -12,4 +12,8 @@ export const updateRegistrationPutSchema = z.object({
     description: z.string("Не правильний формат").max(200, "Перевищено ліміт символів(200)")
 });
 export const updateRegistrationPatchSchema = updateRegistrationPutSchema.partial();
-export const paramsRegistrationSchema = z.object({ id: z.string() }).strict();
+export const paramsRegistrationSchema =  z.object({
+    id: z.string()
+}).strict().transform((data) => ({
+    id: Number(data.id)
+}));

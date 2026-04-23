@@ -8,6 +8,7 @@ import registrationRouter from "./routes/registration.route.js";
 import { globalErrorHandler } from "./errors/global.errors_handler.js";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger.js";
+import {runMigrations} from "./db/migrate.js";
 
 const app: Express = express();
 const PORT: number = Number(process.env.PORT) || 3000;
@@ -31,7 +32,28 @@ app.use("/api/registrations", registrationRouter);
 app.get("/health", (req: Request, res: Response) => {
   res.status(200).json({ ok: true });
 });
+app.use((req, res) => {
+    res.status(404).json({
+        error: {
+            code: "NOT_FOUND",
+            message: "Route not found",
+            details: null
+        }
+    });
+});
 app.use(globalErrorHandler);
-const server = app.listen(PORT, (): void =>
-  console.log(`Server running on port ${PORT}`),
-);
+async function startServer() {
+    try {
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    } catch (err) {
+        console.error("Failed to start server:", err);
+        process.exit(1);
+    }
+}
+
+startServer().catch(err => {
+    console.error("Unhandled error in startServer:", err);
+    process.exit(1);
+});;

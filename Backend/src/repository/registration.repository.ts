@@ -1,84 +1,101 @@
-import type {RegistrationDto, RegistrationResponseDto, CreateRegistrationDto, UpdateRegistrationPutDto, UpdateRegistrationPatchDto} from "../dto/registrations.dto.js";
-import { v4 as uuidv4 } from "uuid";
+import type {
+    RegistrationDbDto,
+    RegistrationDto,
+    CreateRegistrationDto,
+    UpdateRegistrationPutDto,
+    UpdateRegistrationPatchDto, UserRegistrationsDto
+} from "../dto/registrations.dto.js";
+import { mapFromDbtoRegistrationDto } from "../dto/dto.func.js";
+import { all, get, run } from "../db/dbClient.js";
+import type { RunResult } from "../db/dbClient.js";
+import type {Paginated} from "../types/pagineted.type.js";
 
 
-export const registrations: RegistrationDto[] = [
-    {
-        id: "1",
-        userId: "1",
-        eventId: "2",
-        status: "pending",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    },
-    {
-        id: "2",
-        userId: "2",
-        eventId: "1",
-        status: "confirmed",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    },
-    {
-        id: "3",
-        userId: "2",
-        eventId: "3",
-        status: "canceled",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    },
-];
 
-export async function getRegistrations(): Promise<RegistrationDto[]> {
-    return registrations ? structuredClone(registrations) : [];
+export async function getRegistrations(): Promise<Paginated<RegistrationDto>> {
+    const sql = `SELECT 
+        registration_id,
+        user_id,
+        event_id,
+        status,
+        created_at,
+        updated_at,
+        description
+      FROM Registrations 
+      ORDER BY registration_id DESC`;
+    const registrationsDb: RegistrationDbDto[] = await all<RegistrationDbDto>(sql);
+    const total: number = registrationsDb.length;
+    return {data: registrationsDb.map(mapFromDbtoRegistrationDto), total};
 }
-export async function getRegistrationById(id: string): Promise<RegistrationDto | undefined> {
-    const registration = registrations.find(registration => registration.id === id);
-    return registration ? structuredClone(registration) : undefined;
+
+export async function getRegistrationById(id: number): Promise<RegistrationDto | null> {
+    const sql = `SELECT 
+        registration_id,
+        user_id,
+        event_id,
+        status,
+        created_at,
+        updated_at,
+        description
+      FROM Registrations WHERE registration_id = ?`;
+    const registrationDb: RegistrationDbDto | null = await get<RegistrationDbDto>(sql, [Number(id)]);
+    if (!registrationDb) return null;
+    return mapFromDbtoRegistrationDto(registrationDb);
 }
-export async function addRegistration(registration: RegistrationDto): Promise<RegistrationDto> {
-    await registrations.push(registration);
-    return registration;
+export async function addRegistration(payload: CreateRegistrationDto): Promise<RegistrationDto | null> {
+    const sql = "INSERT INTO Registrations(user_id, event_id, status, description) VALUES (?, ?, ?, ?)";
+    const runResult: RunResult = await run(sql, [Number(payload.userId), Number(payload.eventId), payload.status ?? 'pending', payload.description ?? null]);
+    const created = await getRegistrationById(runResult.lastID);
+    return created;
 }
-export async function updateRegistrationPut(id: string, payload: UpdateRegistrationPutDto): Promise<RegistrationDto| undefined> {
-    const index = registrations.findIndex(registration => registration.id === id);
-    if (index === -1) return undefined;
-    const oldregistration = registrations[index];
-    if(!oldregistration){return undefined;}
-    const updatedRegistration: RegistrationDto = {
-        id: oldregistration.id,
-        createdAt: oldregistration.createdAt,
-        userId: oldregistration.userId,
-        eventId: oldregistration.eventId,
-        status: payload.status ,
-        description: payload.description,
-        updatedAt: new Date(),
+
+export async function updateRegistrationPut(
+    id: number,
+    payload: UpdateRegistrationPutDto
+): Promise<RunResult> {
+
+    const sql =
+        "UPDATE Registrations SET status = ?, description = ?, updated_at = datetime('now') WHERE registration_id = ?";
+
+    return run(sql, [
+        payload.status,
+        payload.description,
+        Number(id)
+    ]);
+}
+
+export async function updateRegistrationPatch(
+    id: number,
+    payload: UpdateRegistrationPatchDto
+): Promise<RunResult> {
+
+    const fields: string[] = [];
+    const values: any[] = [];
+
+    if (payload.status !== undefined) {
+        fields.push("status = ?");
+        values.push(payload.status);
     }
-    registrations.splice(index, 1, updatedRegistration);
-    return updatedRegistration;
-}
-export async function updateRegistrationPatch(id: string, payload: UpdateRegistrationPatchDto): Promise<RegistrationDto| undefined> {
-    const index = registrations.findIndex(registration => registration.id === id);
-
-    if (index === -1) return undefined;
-    const oldregistration = registrations[index];
-    if(!oldregistration){return undefined;}
-    const updatedRegistration: RegistrationDto = {
-        id: oldregistration.id,
-        createdAt: oldregistration.createdAt,
-        userId: oldregistration.userId,
-        eventId: oldregistration.eventId,
-        status: payload.status ?? oldregistration.status,
-        description: payload.description !== undefined ? payload.description : oldregistration.description,
-        updatedAt: new Date(),
+    if (payload.description !== undefined) {
+        fields.push("description = ?");
+        values.push(payload.description);
     }
-    registrations.splice(index, 1, updatedRegistration);
-    return updatedRegistration;
+
+    fields.push("updated_at = datetime('now')");
+
+    const sql = `
+        UPDATE Registrations
+        SET ${fields.join(", ")}
+        WHERE registration_id = ?
+    `;
+
+    values.push(Number(id));
+
+    return run(sql, values);
 }
-export async function deleteRegistration(id: string): Promise<RegistrationDto | undefined> {
-    const index = registrations.findIndex(registration => registration.id === id);
-    if (index === -1) return undefined;
-    const deletedRegistration = registrations[index];
-    registrations.splice(index, 1);
-    return deletedRegistration;
+
+export async function deleteRegistration(id: number): Promise<boolean | null> {
+    const runResult: RunResult = await run("DELETE FROM Registrations WHERE registration_id = ?", [Number(id)]);
+    if (runResult.changes === 0) return null;
+    return true;
 }

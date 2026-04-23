@@ -6,9 +6,9 @@ import {mapRegistrationToView} from "../dto/dto.func.js"
 
 
 export async function getRegistrationController(req: Request, res: Response, next: NextFunction) {
-    const {items, total} = await service.getRegistrations();
-    const viewRegistrations = items.map(mapRegistrationToView);
-    res.status(200).json({items: viewRegistrations, total});
+    const {data, total} = await service.getRegistrations();
+    const viewRegistrations = data.map(mapRegistrationToView);
+    res.status(200).json({data: viewRegistrations, total});
 }
 export async function getRegistrationByIdController(req: Request, res: Response, next: NextFunction) {
     const params = res.locals.validated.params;
@@ -18,6 +18,7 @@ export async function getRegistrationByIdController(req: Request, res: Response,
         res.status(200).json(viewRegistration);
     }
 }
+
 export async function addRegistrationController(req: Request, res: Response, next: NextFunction) {
     const body = res.locals.validated.body;
     const registration = await service.addRegistration(body);

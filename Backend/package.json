@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
+    "migrate": "tsx src/db/migrate.ts",
     "start": "node dist/server.js",
+    "seed": "tsx src/db/seed.ts",
     "lint": "eslint .",
     "format": "prettier -w .",
     "test": "jest"
@@ -17,9 +19,11 @@
   "type": "module",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "sqlite3": "^6.0.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^13.0.0",

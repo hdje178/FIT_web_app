@@ -22,12 +22,21 @@ export async function getEventByIDController(req: Request, res: Response) {
     res.status(200).json(viewEvent);
   }
 }
+export async function getEventRegistrationsCountController(req: Request, res: Response) {
+    const id = Number(req.params.id);
+    const result = await service.getRegistrationsCount(id);
+    res.status(200).json(result);
+}
+export async function unsafeSearchEventsController(req: Request, res: Response) {
+    const id = String(req.params.id);
+    const rows = await service.unsafeSearchById(id);
+    res.status(200).json({data: rows, total: rows.length});
+}
 export async function getEventsController(req: Request, res: Response) {
   const query = res.locals.validated.query;
-  const { items, total } = await service.getEvents(query);
-  const viewEvents: EventResponseDto[] = items.map(mapEventToView);
-
-  res.status(200).json({ items: viewEvents, total });
+  const { data, total } = await service.getEvents(query);
+  const viewEvents: EventResponseDto[] = data.map(mapEventToView);
+  res.status(200).json({ data: viewEvents, total });
 }
 export async function updateEventPatchController(req: Request, res: Response) {
   const params = res.locals.validated.params as ParamsEventDto;
@@ -51,7 +60,6 @@ export async function deleteEventController(req: Request, res: Response) {
   const params = res.locals.validated.params as ParamsEventDto;
   const event = await service.deleteEvent(params.id);
   if (event) {
-    const viewEvent: EventResponseDto = mapEventToView(event);
     res.status(204).send();
   }
 }

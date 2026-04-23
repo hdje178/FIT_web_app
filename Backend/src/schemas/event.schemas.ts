@@ -7,7 +7,7 @@ export const createEventSchema = z.object({
     .min(1, "Поле обов'язкове")
     .max(50, "Перевищено ліміт символів(50)"),
   date: z
-    .string("Неправильний формат") // рядок із форми
+    .string("Неправильний формат")
     .refine((val) => {
       const date = new Date(val);
       return !isNaN(date.getTime()) && date >= new Date();
@@ -29,9 +29,11 @@ export const createEventSchema = z.object({
     .max(200, "Перевищено ліміт символів(200)"),
 }).strict();
 
-export const paramsEventSchema = z.object({
-  id: z.uuid().or(z.string()), //для наглядності
-}).strict();
+export const paramsEventSchema =  z.object({
+    id: z.string()
+}).strict().transform((data) => ({
+    id: Number(data.id)
+}));
 export const queryEventSchema = z.object({
   limit: z.coerce
     .number("Неправильний формат")

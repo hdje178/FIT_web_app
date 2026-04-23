@@ -31,9 +31,12 @@ export function validate({
         return next(AppError.badRequest("Body is required"));
     }
       const validBody = body.safeParse(req.body);
+        console.log(" validBody.success:", validBody.success);
+        console.log(" validBody.data:", validBody.data);
       if (!validBody.success) {
           return next(AppError.validation("Validation error", z.treeifyError(validBody.error)));
       }
+
       validated.body = validBody.data;
     }
     if (query) {

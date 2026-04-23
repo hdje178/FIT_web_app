@@ -3,24 +3,51 @@ import type {
     EventItemsDto,
     CreateEventDto,
     UpdateEventPatchDto,
-    QueryEventDto, UpdateEventPutDto,
+    QueryEventDto, UpdateEventPutDto, UnsafeEventRow,
 } from "../dto/event.dto.js";
 import AppError from "../errors/api.errors.js";
 import { v4 as uuid4 } from "uuid";
+import type {Paginated} from "../types/pagineted.type.js";
+export function eventErrorHandler(err: any):never {
+    if (err.code === "SQLITE_CONSTRAINT") {
+        if(err.message.includes("NOT NULL")){
+            const field = err.message.split(": ")[2];
+            throw new AppError( 400, "BAD_REQUEST", `Field ${field} is required`)
+        }
+        if(err.message.includes("UNIQUE")){
+            const field = err.message.split(": ")[2];
+            throw new AppError( 409, "CONFLICT", `That name is already exist`)
+        }
+        if(err.message.includes("FOREIGN KEY")){
+            const field = err.message.split(": ")[2];
+            throw new AppError( 409, "CONFLICT", `Event is used and cannot be deleted`)
+        }
+    }
+    if (err.code === "SQLITE_CONSTRAINT_NOTNULL") {
+        throw new AppError(400, "BAD_REQUEST", "Missing required fields");
+    }
+    if (err.code === "SQLITE_CONSTRAINT_UNIQUE" && err.message.includes("name")) {
+        throw new AppError(409, "CONFLICT", "User with that name already exist");
+    }
+    if (err.code === "SQLITE_CONSTRAINT_PRIMARYKEY") throw new AppError(409, "CONFLICT", "Primary key conflict");
+    if (err.code === "SQLITE_CONSTRAINT_FOREIGNKEY") {
+        throw new AppError(409, "CONFLICT", "Foreign key constraint failed");
+    }
+    if (err.code === "SQLITE_BUSY" || err.code === "SQLITE_LOCKED") {
+        throw new AppError(503, "SERVER_ERROR", "Database busy, try again later");
+    }
+    throw new AppError(500, "SERVER_ERROR", "Internal server error");
+}
 
 export async function addEvent(payload: CreateEventDto): Promise<EventItemsDto> {
-  const event: EventItemsDto = { ...payload, id: uuid4(), createdAt: new Date(), updatedAt: new Date() };
-  if (await repository.ifEventExist(event.name))
-    throw new AppError(
-      409,
-      "CONFLICT",
-      "Event with this name already exist",
-      event,
-    );
-  return repository.addEvent(event);
+  const event = await repository.addEvent(payload)
+  if (!event) {
+      throw new AppError(500, "SERVER_ERROR", "Retrieval failed");
+  }
+  return event;
 }
 export async function getEventByID(
-  id: string,
+  id: number,
 ): Promise<EventItemsDto | undefined> {
   const event = await repository.getEventById(id);
   if (!event) {
@@ -28,64 +55,54 @@ export async function getEventByID(
   }
   return event;
 }
-export async function ifEventExist(name: string): Promise<boolean> {
-  return repository.ifEventExist(name);
+export async function getRegistrationsCount(eventId: number) {
+    return { count: await repository.getRegistrationsCount(eventId) };
 }
-export async function getEvents(
-  query: QueryEventDto,
-): Promise<{ items: EventItemsDto[]; total: number }> {
-  let events = await repository.getEvents();
-  if (query.search) {
-    const search = query.search.toLowerCase();
-    events = events.filter((e) => e.name.toLowerCase().includes(search));
-  }
-  const total: number = events.length;
-  if (query.sortBy) {
-    if (query.sortBy === "number_sorter") {
-      events.sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      );
+export async function unsafeSearchById(search: string) {
+    if (!search) {
+        throw new AppError(400, "BAD_REQUEST", "Name is required");
     }
-    if (query.sortBy === "name_sorter") {
-      events.sort((a, b) => a.name.localeCompare(b.name));
-    }
-    if (query.sortBy === "capacity_sorter") {
-      events.sort((a, b) => a.capacity - b.capacity);
-    }
-    if (query.sortBy === "date_sorter") {
-      events.sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-      );
-    }
-  }
-
-  events = events.slice(query.offset, query.offset + query.limit);
-
-  return { items: events, total };
+    return repository.unsafeGetEventById(String(search?? ""));
+}
+export async function getEvents(query: QueryEventDto): Promise<Paginated<EventItemsDto>> {
+  let events = await repository.getEvents(query);
+    if (!events)
+        throw new AppError(404, "NOT_FOUND", "Events not found");
+  return events;
 }
 export async function updateEventPatch(
-  id: string,
+  id: number,
   payload: UpdateEventPatchDto,
-): Promise<EventItemsDto | undefined> {
-  const event = await repository.updateEventPatch(id, payload);
-  if (!event)
-    throw new AppError(404, "NOT_FOUND", "Event with that id not found", id);
-  return event;
-}
-export async function updateEventPut(
-    id: string,
-    payload: UpdateEventPutDto,
-): Promise<EventItemsDto> {
-    const event = await repository.updateEventPut(id, payload);
+) {
+    if (!payload || Object.keys(payload).length === 0) {
+        throw new AppError(400, "BAD_REQUEST", "Empty update body");
+    }
+
+    const result = await repository.updateEventPatch(id, payload);
+    console.log(result.changes, "changes");
+    const event = await repository.getEventById(id);
     if (!event) {
-        throw new AppError(404, "NOT_FOUND", "Event not found", id);
+        throw new AppError(404, "NOT_FOUND", "Event with that id not found", id);
     }
     return event;
 }
-export async function deleteEvent(id: string): Promise<EventItemsDto | undefined> {
+export async function updateEventPut(
+    id: number,
+    payload: UpdateEventPutDto,
+) {
+    if (!payload || Object.keys(payload).length === 0) {
+        throw new AppError(400, "BAD_REQUEST", "Empty update body");
+    }
+    await repository.updateEventPut(id, payload);
+    const event = await repository.getEventById(id);
+    if (!event) {
+        throw new AppError(404, "NOT_FOUND", "Event with that id not found", id);
+    }
+    return event;
+}
+export async function deleteEvent(id: number): Promise<EventItemsDto | boolean> {
   const event = await repository.deleteEvent(id);
   if (!event)
     throw new AppError(404, "NOT_FOUND", "Event with that id not found", id);
-  return event;
+  return true;
 }
