@@ -36,42 +36,6 @@
 - Registrations: UNIQUE(user_id, event_id), FK → Users/Events.
 - ON DELETE CASCADE: Users → Registrations; ON DELETE RESTRICT: Events → Registrations.
 
-ER-діаграма (Mermaid):
-```mermaid
-erDiagram
-  Users ||--o{ Registrations : has
-  Events ||--o{ Registrations : referenced_by
-
-  Users {
-    INTEGER user_id PK
-    TEXT name
-    TEXT email UNIQUE
-    TEXT password
-    TEXT role
-    TEXT created_at
-    TEXT updated_at
-  }
-  Events {
-    INTEGER event_id PK
-    TEXT name UNIQUE
-    TEXT date
-    TEXT location
-    INTEGER capacity "CHECK 0<capacity<200"
-    TEXT description
-    TEXT created_at
-    TEXT updated_at
-  }
-  Registrations {
-    INTEGER registration_id PK
-    INTEGER user_id FK "→ Users(user_id) ON DELETE CASCADE"
-    INTEGER event_id FK "→ Events(event_id) ON DELETE RESTRICT"
-    TEXT status
-    TEXT description
-    TEXT created_at
-    TEXT updated_at
-    UNIQUE "(user_id, event_id)"
-  }
-```
 
 ## 3) API Reference
 Усі спискові ендпоінти повертають { data, total }. Є централізований error handler з форматом:
