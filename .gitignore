@@ -17,3 +17,5 @@ Backend/src/data/*.db-wal
 Backend/src/data/*.db-lock
 Frontend/node_modules
 Frontend/dist
+.idea/
+.postman/
