@@ -8,6 +8,7 @@ import AppError from "./api.errors.js";
 import {userErrorHandler} from "../service/user.service.js";
 import {eventErrorHandler} from "../service/event.service.js";
 import {registrationErrorHandler} from "../service/registration.service.js";
+import {authErrorHandler} from "../service/auth.service.js";
 export const globalErrorHandler: ErrorRequestHandler = (
     err: unknown,
     req: Request,
@@ -44,6 +45,8 @@ export const globalErrorHandler: ErrorRequestHandler = (
             eventErrorHandler(err);
         }else if (req.path.includes("/registrations")) {
             registrationErrorHandler(err)
+        }else if (req.path.includes("/auth")) {
+            authErrorHandler(err)
         }
     } catch (caughtErr: any) {
         console.log(caughtErr)

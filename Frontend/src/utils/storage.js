@@ -1,8 +1,7 @@
-// FUNCTION FOR LOCAL STORAGE
 export const STORAGE_KEY = "lr1_items";
 
 export function saveToLocalStorage(state){
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.events));
 }
 export function loadFromLocalStorage(STORAGE_KEY) {
     const json =localStorage.getItem(STORAGE_KEY);

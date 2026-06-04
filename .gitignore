@@ -8,5 +8,12 @@
 /dataSources.local.xml
 /.idea
 /.env
-/Backend/node_modules
-/Backend/dist
+Backend/node_modules
+Backend/dist
+Backend/src/data/*.db
+Backend/src/data/*.db-journal
+Backend/src/data/*.db-shm
+Backend/src/data/*.db-wal
+Backend/src/data/*.db-lock
+Frontend/node_modules
+Frontend/dist

@@ -16,7 +16,7 @@ export function eventErrorHandler(err: any):never {
         }
         if(err.message.includes("UNIQUE")){
             const field = err.message.split(": ")[2];
-            throw new AppError( 409, "CONFLICT", `That name is already exist`)
+            throw new AppError( 409, "CONFLICT", `That name already exists`)
         }
         if(err.message.includes("FOREIGN KEY")){
             const field = err.message.split(": ")[2];

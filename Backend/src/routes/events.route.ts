@@ -7,9 +7,8 @@ import {
     createEventSchema,
     updateEventPatchSchema, updateEventPutSchema,
 } from "../schemas/event.schemas.js";
-import {asyncHandler} from "../errors/async_handlerr.errors.js";
 import {paramsRegistrationSchema} from "../schemas/registration.schema.js";
-import {paramsUserSchemas} from "../schemas/user.schemas.js";
+import {authMiddleware, roleBasedMiddleware} from "../middleware/auth.middleware.js";
 const router = express.Router();
 
 /**
@@ -34,10 +33,11 @@ const router = express.Router();
  */
 router.post(
   "/",
-  validate({ body: createEventSchema }),
-  asyncHandler(controller.addEventController),
+  authMiddleware,
+  roleBasedMiddleware("ADMIN"),
+  validate({ body: createEventSchema }), (controller.addEventController),
 );
-router.get("/unsafe/:id", validate({params: paramsEventSchema}), asyncHandler(controller.unsafeSearchEventsController));
+router.get("/unsafe/:id", validate({params: paramsEventSchema}), (controller.unsafeSearchEventsController));
 
 /**
  * @openapi
@@ -58,8 +58,7 @@ router.get("/unsafe/:id", validate({params: paramsEventSchema}), asyncHandler(co
  */
 router.get(
   "/:id",
-  validate({ params: paramsEventSchema }),
-  asyncHandler(controller.getEventByIDController),
+  validate({ params: paramsEventSchema }), (controller.getEventByIDController),
 );
 
 /**
@@ -73,10 +72,9 @@ router.get(
  */
 router.get(
   "/",
-  validate({ query: queryEventSchema }),
-  asyncHandler(controller.getEventsController),
+  validate({ query: queryEventSchema }), (controller.getEventsController),
 );
-router.get("/:id/registrations/count", validate({params: paramsRegistrationSchema}), asyncHandler(controller.getEventRegistrationsCountController));
+router.get("/:id/registrations/count", validate({params: paramsRegistrationSchema}), (controller.getEventRegistrationsCountController));
 
 /**
  * @openapi
@@ -94,8 +92,7 @@ router.get("/:id/registrations/count", validate({params: paramsRegistrationSchem
  *         description: Оновлено
  */
 router.put(
-    "/:id", validate({ params: paramsEventSchema, body: updateEventPutSchema }),
-    asyncHandler(controller.updateEventPutController),
+    "/:id", authMiddleware, roleBasedMiddleware("ADMIN") ,validate({ params: paramsEventSchema, body: updateEventPutSchema }), (controller.updateEventPutController),
 )
 
 /**
@@ -114,9 +111,8 @@ router.put(
  *         description: Оновлено
  */
 router.patch(
-  "/:id",
-  validate({ params: paramsEventSchema, body: updateEventPatchSchema }),
-  asyncHandler(controller.updateEventPatchController),
+  "/:id", authMiddleware,  roleBasedMiddleware("ADMIN"),
+  validate({ params: paramsEventSchema, body: updateEventPatchSchema }), (controller.updateEventPatchController),
 );
 
     /**
@@ -136,8 +132,8 @@ router.patch(
  */
 router.delete(
   "/:id",
-  validate({ params: paramsEventSchema }),
-  asyncHandler(controller.deleteEventController),
+  authMiddleware, roleBasedMiddleware("ADMIN"),
+  validate({ params: paramsEventSchema }), (controller.deleteEventController),
 );
 
 export default router;

@@ -12,6 +12,14 @@ export function mapEventToView(event: EventItemsDto): EventResponseDto {
     description: event.description,
   };
 }
+export function mapAuthUserToView(user: UserDto){
+    return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+    }
+}
 export function mapUserToView(user: UserDto): UserResponseDto {
     return {
     id: user.id,

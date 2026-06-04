@@ -19,6 +19,16 @@ export async function getUserById(id: number):Promise<UserDto | null> {
     }
     return mapFromDbtoUserDto(userDb);
 }
+export async function getUserByEmail(email: string): Promise<UserDto | null> {
+    const userDb: UserDbDto | null = await get<UserDbDto>(
+        "SELECT user_id, name, email,password, role,created_at, updated_at FROM Users WHERE email=?",
+        [email]
+    );
+    if (!userDb) {
+        return null;
+    }
+    return mapFromDbtoUserDto(userDb);
+}
 
 export async function getUserRegistration(id: number): Promise<Paginated<UserRegistrationsDto>> {
     const sql = `SELECT r.registration_id, r.status, r.created_at, r.updated_at, r.description,
@@ -33,6 +43,7 @@ export async function getUserRegistration(id: number): Promise<Paginated<UserReg
 }
 
 export async function addUser(user: CreateUserDto): Promise<UserDto | null> {
+
     console.log("INSERT payload:", {
         name: user.name,
         email: user.email,

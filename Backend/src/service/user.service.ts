@@ -1,10 +1,12 @@
 import * as repository from "../repository/user.repository.js";
+import * as tokenRepository from "../repository/token.repository.js";
 import AppError from "../errors/api.errors.js";
 import type { CreateUserDto, UserDto, UpdateUserPatchDto, UpdateUserPutDto } from "../dto/user.dto.js";
 import { v4 as uuid4 } from "uuid";
 import bcrypt from 'bcryptjs';
 import type {Paginated} from "../types/pagineted.type.js";
 import type {UserRegistrationsDto} from "../dto/registrations.dto.js";
+import {generateTokens} from "../tokens/JwtGenerating.js"
 export function userErrorHandler(err: any):never {
     if (err.code === "SQLITE_CONSTRAINT") {
         if(err.message.includes("NOT NULL")){
@@ -13,12 +15,15 @@ export function userErrorHandler(err: any):never {
         }
         if(err.message.includes("UNIQUE")){
             const field = err.message.split(": ")[2];
-            throw new AppError( 409, "CONFLICT", `That email is already exist`)
+            throw new AppError( 409, "CONFLICT", `That email already exists`)
         }
         if(err.message.includes("FOREIGN KEY")){
             const field = err.message.split(": ")[2];
             throw new AppError( 409, "CONFLICT", `User is used and cannot be deleted`)
         }
+    }
+    if (err.code === "SQLITE_ERROR") {
+        throw new AppError(500, "INTERNAL_ERROR", "Internal server error");
     }
     if (err.code === "SQLITE_CONSTRAINT_NOTNULL") {
         throw new AppError(400, "BAD_REQUEST", "Missing required fields");
@@ -107,6 +112,13 @@ export async function updateUserPut(id: number, payload: UpdateUserPutDto) {
 }
 
 export async function deleteUser(id: number){
+    let getUser = await repository.getUserById(id);
+    if (!getUser) {
+        throw new AppError(404, "NOT_FOUND", "User with that id not found", id);
+    }
+    if (getUser.role === "ADMIN") {
+        throw new AppError(403, "FORBIDDEN", "Admin cannot be deleted");
+    }
     let user: boolean | null = await repository.deleteUser(id);
     if (!user) {
         throw new AppError(404, "NOT_FOUND", "User with that id not found", id);

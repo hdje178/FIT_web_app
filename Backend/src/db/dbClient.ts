@@ -3,7 +3,6 @@ export type RunResult = {
     changes: number;
     lastID: number;
 };
-
 function all<T>(sql: string, params: unknown[] = []):Promise<T[]> {
     return new Promise<T[]>((resolve, reject) => {
         db.all(sql,params, (err, rows) => (err ? reject(err) : resolve((rows as T[] | undefined )?? [])));

@@ -11,7 +11,7 @@ export interface EventItemsDto {
   name: string;
   createdAt: string;
   updatedAt: string;
-  date: Date;
+  date: string
   location: string;
   capacity: number;
   description: string;
@@ -19,7 +19,7 @@ export interface EventItemsDto {
 export interface EventDbDto{
     event_id: number;
     name: string;
-    date: Date;
+    date: string;
     location: string;
     capacity: number;
     description: string;
@@ -37,7 +37,7 @@ export type UnsafeEventRow = {
 export interface EventResponseDto {
   id: number;
   name: string;
-  date: Date;
+  date: string;
   location: string;
   capacity: number;
   description: string;

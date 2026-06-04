@@ -45,13 +45,16 @@ export async function getRegistrationById(id: number): Promise<RegistrationDto> 
     return user;
 }
 
-export async function addRegistration(payload: CreateRegistrationDto): Promise<RegistrationDto> {
-    const registration: CreateRegistrationDto = {
+export async function addRegistration(payload: CreateRegistrationDto & { userId: string | number }): Promise<RegistrationDto> {
+    const registration: CreateRegistrationDto & { userId: string | number }= {
         userId: payload.userId,
         eventId: payload.eventId,
         status: "pending",
         description: payload.description ?? undefined,
     };
+    if (payload.description !== undefined) {
+        registration.description = payload.description;
+    }
     const registrationFromDb = await repository.addRegistration(registration);
     if (!registrationFromDb) {
         throw new AppError(500, "SERVER_ERROR", "Retrieval failed");
@@ -75,6 +78,13 @@ export async function updateRegistrationPatch(
         throw new AppError(404, "NOT_FOUND", "Registration with that id not found", id);
     }
     return registration;
+}
+export async function getRegistrationsByUserId(userId: number): Promise<Paginated<RegistrationDto>> {
+    const registrations = await repository.getRegistrationsByUserId(userId);
+    if (!registrations) {
+        throw new AppError(404, "NOT_FOUND", "No registrations found for this user");
+    }
+    return registrations;
 }
 export async function updateRegistrationPut(
     id: number,

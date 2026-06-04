@@ -1,4 +1,5 @@
 import { run } from "./dbClient.js";
+import {hash} from "bcrypt";
 
 
 async function seed() {
@@ -17,9 +18,12 @@ async function seed() {
     await run("DELETE FROM sqlite_sequence WHERE name IN ('Users','Events','Registrations')");
 
     console.log("[seed] Inserting Users...");
-    const demoHash = "$2a$10$2cXlq5zD0L17dH1c6y0JfO1m7v7bq9bWv2RrB3b2fXq3s2rXrN7bO";
+    const passwd = "12345678";
+    const adminHash = await hash("00000000", 10);
+    const demoHash = await hash(passwd, 10);
     await run(
       `INSERT INTO Users(name, email, password, role) VALUES
+        ('Admin', 'dima4828@ukr.net', '${adminHash}', 'ADMIN'),                                          
         ('Alice', 'alice@example.com', '${demoHash}', 'USER'),
         ('Bob', 'bob@example.com', '${demoHash}', 'USER'),
         ('Carol', 'carol@example.com', '${demoHash}', 'USER')`

@@ -22,8 +22,8 @@ export async function getRegistrationByUserIdController(req: Request, res: Respo
 }
 export async function addUserController(req: Request, res: Response, next: NextFunction) {
     const body = res.locals.validated.body as CreateUserDto;
-    const user: UserDto | null = await service.addUser(body);
-    const viewUser: UserResponseDto = mapUserToView(user);
+    const data:UserDto  = await service.addUser(body);
+    const viewUser: UserResponseDto = mapUserToView(data);
     res.status(201).json(viewUser);
 }
 export async function updateUserPatchController(req: Request, res: Response, next: NextFunction) {
@@ -44,6 +44,7 @@ export async function updateUserPutController(req: Request, res: Response, next:
 }
 export async function deleteUserController(req: Request, res: Response, next: NextFunction) {
     const params = res.locals.validated.params as ParamsUserDto;
+    const targetId = Number(req.params.id);
     await service.deleteUser(params.id);
     res.status(204).send();
 }

@@ -27,7 +27,11 @@ export async function getRegistrations(): Promise<Paginated<RegistrationDto>> {
     const total: number = registrationsDb.length;
     return {data: registrationsDb.map(mapFromDbtoRegistrationDto), total};
 }
-
+export async function getRegistrationsByUserId(userId: number) {
+    const sql = `SELECT * FROM Registrations WHERE user_id = ? ORDER BY registration_id DESC`;
+    const regs = await all<RegistrationDbDto>(sql, [userId]);
+    return { data: regs.map(mapFromDbtoRegistrationDto), total: regs.length };
+}
 export async function getRegistrationById(id: number): Promise<RegistrationDto | null> {
     const sql = `SELECT 
         registration_id,
@@ -42,7 +46,7 @@ export async function getRegistrationById(id: number): Promise<RegistrationDto |
     if (!registrationDb) return null;
     return mapFromDbtoRegistrationDto(registrationDb);
 }
-export async function addRegistration(payload: CreateRegistrationDto): Promise<RegistrationDto | null> {
+export async function addRegistration(payload: { userId: string | number; eventId: string; status: string; description?: string | undefined }): Promise<RegistrationDto | null> {
     const sql = "INSERT INTO Registrations(user_id, event_id, status, description) VALUES (?, ?, ?, ?)";
     const runResult: RunResult = await run(sql, [Number(payload.userId), Number(payload.eventId), payload.status ?? 'pending', payload.description ?? null]);
     const created = await getRegistrationById(runResult.lastID);

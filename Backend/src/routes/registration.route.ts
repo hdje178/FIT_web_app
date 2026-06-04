@@ -2,8 +2,7 @@ import express from "express";
 import * as controller from "../controllers/registration.controller.js";
 import { validate } from "../middleware/validate.js";
 import {updateRegistrationPutSchema, createRegistrationSchema, updateRegistrationPatchSchema, paramsRegistrationSchema} from "../schemas/registration.schema.js"
-import {asyncHandler} from "../errors/async_handlerr.errors.js";
-import {id} from "zod/locales";
+import {authMiddleware} from "../middleware/auth.middleware.js";
 
 
 const router = express.Router();
@@ -17,8 +16,8 @@ const router = express.Router();
  *       200:
  *         description: Список реєстрацій
  */
-router.get("/", validate({}), asyncHandler(controller.getRegistrationController));
-
+router.get("/",authMiddleware, validate({}), (controller.getRegistrationController));
+router.get("/me",authMiddleware, validate({}), controller.getMyRegistration )
 /**
  * @openapi
  * /api/registrations/{id}:
@@ -36,7 +35,7 @@ router.get("/", validate({}), asyncHandler(controller.getRegistrationController)
  *       404:
  *         description: Не знайдено
  */
-router.get("/:id", validate({params: paramsRegistrationSchema}), asyncHandler(controller.getRegistrationByIdController));
+router.get("/:id",authMiddleware, validate({params: paramsRegistrationSchema}), (controller.getRegistrationByIdController));
 /**
  * @openapi
  * /api/registrations:
@@ -61,7 +60,7 @@ router.get("/:id", validate({params: paramsRegistrationSchema}), asyncHandler(co
  *       201:
  *         description: Створено
  */
-router.post("/", validate({body: createRegistrationSchema}), asyncHandler(controller.addRegistrationController));
+router.post("/",authMiddleware, validate({body: createRegistrationSchema}),(controller.addRegistrationController));
 
 /**
  * @openapi
@@ -78,7 +77,7 @@ router.post("/", validate({body: createRegistrationSchema}), asyncHandler(contro
  *       200:
  *         description: Оновлено
  */
-router.patch("/:id", validate({params: paramsRegistrationSchema, body: updateRegistrationPatchSchema}), asyncHandler(controller.updateRegistrationPatchController));
+router.patch("/:id",authMiddleware, validate({params: paramsRegistrationSchema, body: updateRegistrationPatchSchema}), (controller.updateRegistrationPatchController));
 
 /**
  * @openapi
@@ -95,7 +94,7 @@ router.patch("/:id", validate({params: paramsRegistrationSchema, body: updateReg
  *       200:
  *         description: Оновлено
  */
-router.put("/:id", validate({params: paramsRegistrationSchema, body: updateRegistrationPutSchema}), asyncHandler(controller.updateRegistrationPutController));
+router.put("/:id",authMiddleware, validate({params: paramsRegistrationSchema, body: updateRegistrationPutSchema}), (controller.updateRegistrationPutController));
 
 /**
  * @openapi
@@ -112,7 +111,7 @@ router.put("/:id", validate({params: paramsRegistrationSchema, body: updateRegis
  *       200:
  *         description: Видалено
  */
-router.delete("/:id", validate({params: paramsRegistrationSchema}), asyncHandler(controller.deleteRegistrationController));
+router.delete("/:id",authMiddleware, validate({params: paramsRegistrationSchema}), (controller.deleteRegistrationController));
 
 
 

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сайт з реєстрації події</title>
+    <link rel="stylesheet" href="../css/baseStyle.css">
+    <link rel="stylesheet" href="../css/header.css">
+    <script type="module" src="../src/users.main.js"></script>
+</head>
+<body class="not-ready">
+<div id="wrap">
+    <header>
+       <span class="logo">
+            <a href="events.html"><img alt="FIT logo" src="../icons/FIT_icon.png">&nbsp;& JunkoTeam</a></span>
+        <nav class="navbar_header">
+            <ul>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="users.html">Users</a></li>
+                <li><a href="myRegistrations.html">My Registrations</a></li>
+                <li><a id="logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <br>
+    <div class="spinner-wrapper hidden"><div id="spinner" class="spinner hidden"></div></div>
+    <main>
+        <div class="toolbox">
+            <div class="text"></div>
+            <div class="bar">
+                <div class="bar-fill"></div>
+            </div>
+        </div>
+
+        <h1 id="header_h1">Варіант №7<br>Сайт зі створення користувачів</h1>
+        <div class="container">
+            <div class="form_container">
+                <form class="register-form" id="register-form" novalidate>
+                    <div class="register-form_name_div">
+                        <label for="register-form_name">Ім'я</label>
+                        <input id="register-form_name" type="text" name="name" placeholder="Введіть ім'я...">
+                        <small class="error" id="name_error"></small>
+                    </div>
+                    <div class="register-form_email_div">
+                        <label for="register-form_email">Email</label>
+                        <input id="register-form_email" type="email" name="email" placeholder="Введіть email..." >
+                        <small class="error" id="email_error"></small>
+                    </div>
+                    <div class="register-form_password_div">
+                        <label for="register-form_password">Пароль</label>
+                        <input  id="register-form_password" name="password" type="password">
+                        <small class="error" id="password_error"></small>
+                    </div>
+                    <div class="register-form_buttons">
+                        <div class="register-form_button_submit">
+                            <button id ="submit_button" type="submit">Підтвердити</button>
+                        </div>
+                        <div class="register-form_button_reset">
+                            <button id="reset_button" type="button">Відмінити</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="table_container">
+                <!--                <div class="table_filters">-->
+                <!--                    <div class="search_for_element">-->
+                <!--                        <label for="input_for_search">Пошук:</label>-->
+                <!--                        <input id="input_for_search" type="text">-->
+                <!--                        <button type="button" id="button_for_search">Шукати</button>-->
+                <!--                        <button type="button" id="button_for_reset">Відмінити</button>-->
+                <!--                    </div>-->
+                <!--                    <label for="table_sorter">Вибрати сортування:</label>-->
+                <!--                    <select id="table_sorter">-->
+                <!--                        <option value="number_sorter">За номером додання</option>-->
+                <!--                        <option value="name_sorter">За назвою</option>-->
+                <!--                        <option value="email_sorter">За поштою</option>-->
+                <!--                    </select>-->
+                <!--                </div>-->
+                <table class="register_table">
+                    <thead class="register_table_head">
+                    <tr>
+                        <th>Номер</th>
+                        <th>Ім'я</th>
+                        <th>Email</th>
+                        <th>Роль</th>
+                        <th>Видалити</th>
+                        <th>Редагувати/Зберегти</th>
+                    </tr>
+                    </thead>
+                    <tbody class="register_table_body">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+
+</body>
+</html>
