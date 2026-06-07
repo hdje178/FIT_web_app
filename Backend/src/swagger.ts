@@ -272,6 +272,13 @@ export const swaggerSpec: Record<string, any> = {
         responses: { 201: { description: "Створено" } },
       },
     },
+    "/api/registrations/me": {
+      get: {
+        tags: ["Registrations"],
+        summary: "Отримати реєстрації поточного користувача",
+        responses: { 200: { description: "Список реєстрацій користувача" }, 401: { description: "Неавторизовано" } },
+      },
+    },
     "/api/registrations/{id}": {
       parameters: [
         { in: "path", name: "id", required: true, schema: { type: "string" } },
