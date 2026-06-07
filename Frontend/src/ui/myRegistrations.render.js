@@ -1,5 +1,4 @@
 import {renderHeader, renderWelcome} from "./events.render.js";
-let lastAuthUser = undefined;
 
 export function renderMyRegistrationsApp(state){
     renderRegistrationsTable(state);
@@ -10,7 +9,7 @@ function renderRegistrationsTable(state) {
     const tbody = document.querySelector(".register_table_body");
     const thead = document.querySelector(".register_table_head");
     const isAdmin = state.auth.user?.role?.toLowerCase() === 'admin';
-    const items = state.registrations.list;
+    const items = state.registration.list;
     const events = state.events.list;
 
     if (state.auth.user) {

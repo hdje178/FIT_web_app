@@ -54,7 +54,7 @@ function renderEventsTable(state) {
         <td data-id="${item.id}"><button type="button" ${isEditing ? 'class="save-btn"' : 'class="edit-btn"'} data-id="${item.id}">${isEditing ? "Зберегти" : "Редагувати"}</button></td>
       </tr>`;
             } else {
-                const isRegistered = state.registrations.list.some(r => r.eventId === item.id);
+                const isRegistered = state.registration.list.some(r => r.eventId === item.id);
                 return `
       <tr data-id="${item.id}">
         <td data-id="${item.id}">${index + 1}</td>

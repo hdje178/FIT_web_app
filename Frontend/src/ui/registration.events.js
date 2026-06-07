@@ -32,7 +32,7 @@ export function bindEventsRegistration(store){
         event.preventDefault();
         await store.submitFormRegistration();
         const form = document.getElementById('register-form');
-        if (store.getState().registration.form.isValid) {
+        if (store.getState().userRegistrations.form.isValid) {
             form.reset();
         }
     })

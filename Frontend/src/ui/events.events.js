@@ -66,7 +66,7 @@ export function bindEventsEvents(store) {
 
             store.saveEvents(id, payload);
         }
-        const regBtn = target.closest('.registration-btn');
+        const regBtn = target.closest('.userRegistrations-btn');
         if (regBtn) {
             const eventId = regBtn.dataset.id;
             regBtn.disabled = true;

@@ -1,5 +1,3 @@
-import { renderHeader } from "./events.render.js";
-
 export function bindMyRegistrationsEvents(store) {
     document.querySelector("header").addEventListener("click", async (e) => {
         if (e.target.id === "logout") await store.logout();
@@ -23,7 +21,7 @@ export function bindMyRegistrationsEvents(store) {
     store.subscribe((state) => {
         const spinner = document.querySelector(".spinner");
         const wrapper = document.querySelector(".spinner-wrapper");
-        if (state.registrations.isLoading || state.auth.isLoading) {
+        if (state.registration.isLoading || state.auth.isLoading) {
             spinner.classList.remove("hidden");
             wrapper.classList.remove("hidden");
             wrapper.style.pointerEvents = 'auto';

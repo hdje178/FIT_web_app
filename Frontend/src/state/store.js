@@ -76,22 +76,22 @@ export function createStore() {
             return false;
         }
         try {
-            state.registrations.isSubmitting = true; listeners.forEach(fn => fn(state));
+            state.registration.isSubmitting = true; listeners.forEach(fn => fn(state));
             const res = await addRegistrations({ eventId: String(eventId) });
             if (!res.ok) {
-                state.registrations.isSubmitting = false;
-                state.registrations.screenError = res.error;
+                state.registration.isSubmitting = false;
+                state.registration.screenError = res.error;
                 listeners.forEach(fn => fn(state));
                 runAnimationAlert(store, res.error?.details?.error?.message || "Не вдалося зареєструватись");
                 return false;
             }
             runAnimationAlert(store, "Ви успішно зареєструвалися ✅");
-            state.registrations.isSubmitting = false;
+            state.registration.isSubmitting = false;
             await store.loadMyRegistrations();
             await store.loadEvents();
             return true;
         } catch (e) {
-            state.registrations.isSubmitting = false; listeners.forEach(fn => fn(state));
+            state.registration.isSubmitting = false; listeners.forEach(fn => fn(state));
             runAnimationAlert(store, "Неочікувана помилка");
             return false;
         }
@@ -250,19 +250,19 @@ export function createStore() {
             const timeout = createTimeoutSignal(myRegsController.signal, 10000);
             const reqId = ++myRegsReqId;
 
-            store.setState({ registrations: { ...state.registrations, isLoading: true, screenError: null } });
+            store.setState({ registration: { ...state.registration, isLoading: true, screenError: null } });
             try {
-                const res = await getMyRegistration(undefined, timeout.signal);
-                if (reqId !== myRegsReqId) { store.setState({ registrations: { ...state.registrations, isLoading: false } }); return; }
+                const res = await getMyRegistration(timeout.signal);
+                if (reqId !== myRegsReqId) { store.setState({ registration: { ...state.registration, isLoading: false } }); return; }
                 if (!res.ok) {
-                    store.setState({ registrations: { ...state.registrations, screenError: res.error, isLoading: false } });
+                    store.setState({ registration: { ...state.registration, screenError: res.error, isLoading: false } });
                     return;
                 }
                 const items = res.data?.data ?? res.data ?? [];
-                store.setState({ registrations: { ...state.registrations, list: items, isLoading: false } });
+                store.setState({ registration: { ...state.registration, list: items, isLoading: false } });
             } catch (e) {
                 if (e?.name !== 'AbortError') {
-                    store.setState({ registrations: { ...state.registrations, screenError: "Unexpected error", isLoading: false } });
+                    store.setState({ registration: { ...state.registration, screenError: "Unexpected error", isLoading: false } });
                 }
             } finally {
                 timeout.clear();
@@ -276,20 +276,20 @@ export function createStore() {
             const timeout = createTimeoutSignal(allRegsController.signal, 10000);
             const reqId = ++allRegsReqId;
 
-            store.setState({ registrations: { ...state.registrations, isLoading: true, screenError: null } });
+            store.setState({ registration: { ...state.registration, isLoading: true, screenError: null } });
             try {
-                const res = await getRegistrations(undefined, timeout.signal);
-                if (reqId !== allRegsReqId) { store.setState({ registrations: { ...state.registrations, isLoading: false } }); return; }
+                const res = await getRegistrations(timeout.signal);
+                if (reqId !== allRegsReqId) { store.setState({ registration: { ...state.registration, isLoading: false } }); return; }
                 if (!res.ok) {
-                    store.setState({ registrations: { ...state.registrations, screenError: res.error, isLoading: false } });
+                    store.setState({ registration: { ...state.registration, screenError: res.error, isLoading: false } });
                     return;
                 }
                 const items = res.data?.data ?? res.data ?? [];
-                store.setState({ registrations: { ...state.registrations, list: items, isLoading: false } });
+                store.setState({ registration: { ...state.registration, list: items, isLoading: false } });
                 console.log("allRegs:", items)
             } catch (e) {
                 if (e?.name !== 'AbortError') {
-                    store.setState({ registrations: { ...state.registrations, screenError: "Unexpected error", isLoading: false } });
+                    store.setState({ registration: { ...state.registration, screenError: "Unexpected error", isLoading: false } });
                 }
             } finally {
                 timeout.clear();
@@ -562,10 +562,10 @@ export function createStore() {
             listeners.forEach(fn => fn(state));
         },
         updateFieldRegistration: (name, value) => {
-            state.registration.form.touched[name] = true;
-            state.registration.form.values[name] = value;
-            state.registration.form.errors = validateRegistrationForm(state.registration.form);
-            state.registration.form.isValid = Object.keys(state.registration.form.errors).length === 0;
+            state.userRegistrations.form.touched[name] = true;
+            state.userRegistrations.form.values[name] = value;
+            state.userRegistrations.form.errors = validateRegistrationForm(state.userRegistrations.form);
+            state.userRegistrations.form.isValid = Object.keys(state.userRegistrations.form.errors).length === 0;
             listeners.forEach(fn => fn(state));
         },
         updateFieldEvents: (name, value) => {
@@ -646,38 +646,38 @@ export function createStore() {
             window.location.href = redirectPage;
         },
         submitFormRegistration: async () => {
-            state.registration.form.touched = {
+            state.userRegistrations.form.touched = {
                 name: true, email: true, password: true
             };
             const errors = validateRegistrationForm(state.login.form);
-            state.registration.form.errors = errors;
-            state.registration.form.isValid = Object.keys(errors).length === 0;
+            state.userRegistrations.form.errors = errors;
+            state.userRegistrations.form.isValid = Object.keys(errors).length === 0;
 
-            if (!state.registration.form.isValid) {
+            if (!state.userRegistrations.form.isValid) {
                 listeners.forEach(fn => fn(state));
                 return;
             }
             const toRegister = {
-                name: state.registration.form.values.name,
-                email: state.registration.form.values.email,
-                password: state.registration.form.values.password,
+                name: state.userRegistrations.form.values.name,
+                email: state.userRegistrations.form.values.email,
+                password: state.userRegistrations.form.values.password,
             };
 
             const res = await Register(toRegister);
             if(!res.ok){
-                state.registration.form.generalError = res.error.details.error.message;
+                state.userRegistrations.form.generalError = res.error.details.error.message;
                 listeners.forEach(fn => fn(state));
                 runAnimationAlert(store, res.error.details.error.message || "Помилка реєстрації")
                 return;
             }
             const toAdd = {
-                email: state.registration.form.values.email,
-                password: state.registration.form.values.password,
+                email: state.userRegistrations.form.values.email,
+                password: state.userRegistrations.form.values.password,
             };
             const loginRes = await Login(toAdd);
             if(!loginRes.ok){
                 const errMsg = loginRes.error?.details?.error?.message || "Помилка авторизації після реєстрації";
-                state.registration.form.generalError = errMsg;
+                state.userRegistrations.form.generalError = errMsg;
                 listeners.forEach(fn => fn(state));
                 runAnimationAlert(store, errMsg);
                 return;
@@ -752,10 +752,10 @@ export function createStore() {
             listeners.forEach(fn => fn(state));
         },
         resetFormRegistration: () => {
-            state.registration.form.touched = {};
-            state.registration.form.values = structuredClone(initialState.registration.form.values);
-            state.registration.form.errors = structuredClone(initialState.registration.form.errors);
-            state.registration.form.isValid = true;
+            state.userRegistrations.form.touched = {};
+            state.userRegistrations.form.values = structuredClone(initialState.userRegistrations.form.values);
+            state.userRegistrations.form.errors = structuredClone(initialState.userRegistrations.form.errors);
+            state.userRegistrations.form.isValid = true;
             listeners.forEach(fn => fn(state));
         },
         resetFormEvents: () => {

@@ -247,7 +247,7 @@ const userId = req.user.userId;
 const check = await service.getRegistrationById(params.id);
 
 if (!isAdmin && check.userId !== userId) {
-    return next(new AppError(403, 'FORBIDDEN', 'You can only cancel your own registrations'));
+    return next(new AppError(403, 'FORBIDDEN', 'You can only cancel your own registration'));
 }
 ```
 

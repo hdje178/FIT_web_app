@@ -7,7 +7,7 @@ function renderRegistrationFormErrors(state) {
     fields.forEach(field => {
         let el = document.getElementById(`${field}_error`);
         let input = document.getElementById(`register-form_${field}`);
-        const message = state.registration.form.touched[`${field}`] ? state.registration.form.errors[field] ?? "": "";
+        const message = state.userRegistrations.form.touched[`${field}`] ? state.userRegistrations.form.errors[field] ?? "": "";
         el.textContent = message;
         message? input.classList.add("invalid") : input.classList.remove("invalid");
         if (message) {
@@ -16,9 +16,9 @@ function renderRegistrationFormErrors(state) {
             el.classList.remove("visible");
         }
     });
-    submit_btn.disabled = !state.registration.form.isValid;
+    submit_btn.disabled = !state.userRegistrations.form.isValid;
     const generalError = document.getElementById("general_error");
     if (generalError) {
-        generalError.textContent = state.registration.form.generalError ?? "";
+        generalError.textContent = state.userRegistrations.form.generalError ?? "";
     }
 }

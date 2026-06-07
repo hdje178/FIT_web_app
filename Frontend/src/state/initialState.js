@@ -65,14 +65,14 @@ export const initialState = {
             generalError: null
         }
     },
-    registrations:{
+    registration:{
         list: [],
         isLoading: false,
         isSubmitting: false,
         isEmpty: false,
         screenError: null,
     },
-    registration:{
+    userRegistrations:{
         list: [],
         isLoading: false,
         isSubmitting: false,

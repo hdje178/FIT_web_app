@@ -82,7 +82,7 @@ export async function updateRegistrationPatch(
 export async function getRegistrationsByUserId(userId: number): Promise<Paginated<RegistrationDto>> {
     const registrations = await repository.getRegistrationsByUserId(userId);
     if (!registrations) {
-        throw new AppError(404, "NOT_FOUND", "No registrations found for this user");
+        throw new AppError(404, "NOT_FOUND", "No registration found for this user");
     }
     return registrations;
 }

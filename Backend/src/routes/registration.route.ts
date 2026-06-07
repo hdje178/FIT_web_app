@@ -9,7 +9,7 @@ const router = express.Router();
 
 /**
  * @openapi
- * /api/registrations:
+ * /api/registration:
  *   get:
  *     summary: Отримати всі реєстрації
  *     responses:
@@ -20,7 +20,7 @@ router.get("/",authMiddleware, validate({}), (controller.getRegistrationControll
 router.get("/me",authMiddleware, validate({}), controller.getMyRegistration )
 /**
  * @openapi
- * /api/registrations/{id}:
+ * /api/registration/{id}:
  *   get:
  *     summary: Отримати реєстрацію за ID
  *     parameters:
@@ -38,7 +38,7 @@ router.get("/me",authMiddleware, validate({}), controller.getMyRegistration )
 router.get("/:id",authMiddleware, validate({params: paramsRegistrationSchema}), (controller.getRegistrationByIdController));
 /**
  * @openapi
- * /api/registrations:
+ * /api/registration:
  *   post:
  *     summary: Створити реєстрацію
  *     requestBody:
@@ -64,7 +64,7 @@ router.post("/",authMiddleware, validate({body: createRegistrationSchema}),(cont
 
 /**
  * @openapi
- * /api/registrations/{id}:
+ * /api/registration/{id}:
  *   patch:
  *     summary: Часткове оновлення реєстрації
  *     parameters:
@@ -81,7 +81,7 @@ router.patch("/:id",authMiddleware, validate({params: paramsRegistrationSchema, 
 
 /**
  * @openapi
- * /api/registrations/{id}:
+ * /api/registration/{id}:
  *   put:
  *     summary: Повне оновлення реєстрації
  *     parameters:
@@ -98,7 +98,7 @@ router.put("/:id",authMiddleware, validate({params: paramsRegistrationSchema, bo
 
 /**
  * @openapi
- * /api/registrations/{id}:
+ * /api/registration/{id}:
  *   delete:
  *     summary: Видалити реєстрацію
  *     parameters:

@@ -22,7 +22,7 @@ export async function getRegistrationByIdController(req: Request, res: Response,
     if (!registration) return next(new AppError(404, 'NOT_FOUND', 'Registration not found'));
 
     if (!isAdmin && registration.userId !== userId) {
-        return next(new AppError(403, 'FORBIDDEN', 'You can only cancel your own registrations'));
+        return next(new AppError(403, 'FORBIDDEN', 'You can only cancel your own registration'));
     }
     if (registration) {
         const viewRegistration = mapRegistrationToView(registration);
@@ -47,7 +47,7 @@ export async function updateRegistrationPatchController(req: Request, res: Respo
     if (!check) return next(new AppError(404, 'NOT_FOUND', 'Registration not found'));
 
     if (!isAdmin && check.userId !== userId) {
-        return next(new AppError(403, 'FORBIDDEN', 'You can only cancel your own registrations'));
+        return next(new AppError(403, 'FORBIDDEN', 'You can only cancel your own registration'));
     }
     const registration = await service.updateRegistrationPatch(params.id, body);
     if (registration) {
@@ -65,7 +65,7 @@ export async function updateRegistrationPutController(req: Request, res: Respons
     if (!check) return next(new AppError(404, 'NOT_FOUND', 'Registration not found'));
 
     if (!isAdmin && check.userId !== userId) {
-        return next(new AppError(403, 'FORBIDDEN', 'You can only cancel your own registrations'));
+        return next(new AppError(403, 'FORBIDDEN', 'You can only cancel your own registration'));
     }
     const registration = await service.updateRegistrationPut(params.id, body);
     if (registration) {
@@ -81,7 +81,7 @@ export async function deleteRegistrationController(req: Request, res: Response, 
     if (!registration) return next(new AppError(404, 'NOT_FOUND', 'Registration not found'));
 
     if (!isAdmin && registration.userId !== userId) {
-        return next(new AppError(403, 'FORBIDDEN', 'You can only cancel your own registrations'));
+        return next(new AppError(403, 'FORBIDDEN', 'You can only cancel your own registration'));
     }
     await service.deleteRegistration(params.id);
     res.status(204).send();
